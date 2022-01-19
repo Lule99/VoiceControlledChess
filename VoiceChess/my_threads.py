@@ -7,7 +7,7 @@ class WorkerSignals(QtCore.QObject):
     finished = QtCore.Signal()
     error = QtCore.Signal(tuple)
     result = QtCore.Signal(object)
-    progress = QtCore.Signal(str)
+    progress = QtCore.Signal(object)
 
 
 class Worker(QtCore.QRunnable):
