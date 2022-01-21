@@ -1,5 +1,6 @@
 from board import *
 
+
 class Heuristic(object):
 
     king_positions = [
@@ -74,16 +75,24 @@ class Heuristic(object):
     last_user_moves = [[], [], [], [], []]
 
     @staticmethod
+    def is_game_over(board):
+        if (Heuristic.check_if_it_is_tie()):
+            return True
+        return abs(Heuristic.calculate(board)) > 5000
+
+    @staticmethod
     def calculate(board):
 
         score = 0
-        for i in range (0,8):
-            for k in range(0,8):
+        for i in range(0, 8):
+            for k in range(0, 8):
                 if (not board.fields[i][k] == EMPTY_FIELD):
                     if (get_piece_color(board.fields[i][k]) == board.computer_color):
-                        score += Heuristic.calculate_piece_value(board.fields[i][k]) + Heuristic.get_position_value(board.fields[i][k], 7 - i, k)
+                        score += Heuristic.calculate_piece_value(
+                            board.fields[i][k]) + Heuristic.get_position_value(board.fields[i][k], 7 - i, k)
                     else:
-                        score -= Heuristic.calculate_piece_value(board.fields[i][k]) + Heuristic.get_position_value(board.fields[i][k], i, k)
+                        score -= Heuristic.calculate_piece_value(
+                            board.fields[i][k]) + Heuristic.get_position_value(board.fields[i][k], i, k)
 
         return score
 
@@ -147,19 +156,22 @@ class Heuristic(object):
                     if (Heuristic.check_for_possible_tie_computer(moves[i])):
                         value = 0
                     else:
-                        value = Heuristic.minimax(moves[i], depth + 1, get_opponent_color(color_on_turn), alpha, beta, goal_depth, i, first_user_move)
+                        value = Heuristic.minimax(moves[i], depth + 1, get_opponent_color(
+                            color_on_turn), alpha, beta, goal_depth, i, first_user_move)
                     if (best_value < value):
                         best_value = value
                         move_to_make = i
                     alpha = max(alpha, best_value)
                     if (beta <= alpha):
                         break
-                Heuristic.write_computer_move(Heuristic.possible_first_moves[move_to_make])
+                Heuristic.write_computer_move(
+                    Heuristic.possible_first_moves[move_to_make])
 
                 return Heuristic.possible_first_moves[move_to_make]
             else:
                 for i in range(0, len(moves)):
-                    value = Heuristic.minimax(moves[i], depth + 1, get_opponent_color(color_on_turn), alpha, beta, goal_depth, first_move, first_user_move)
+                    value = Heuristic.minimax(moves[i], depth + 1, get_opponent_color(
+                        color_on_turn), alpha, beta, goal_depth, first_move, first_user_move)
                     best_value = max(value, best_value)
                     alpha = max(alpha, best_value)
                     if (beta <= alpha):
@@ -174,14 +186,15 @@ class Heuristic(object):
                 if (not board.check_if_it_is_check(color_on_turn)):
                     return 0
                 else:
-                    #ako je sah mat, skaliraj ga
+                    # ako je sah mat, skaliraj ga
                     best_value = best_value * (goal_depth + 1 - depth)
 
             for i in range(0, len(moves)):
                 if (first_user_move == -1 and Heuristic.check_for_possible_tie_user(moves[i])):
                     value = 0
                 else:
-                    value = Heuristic.minimax(moves[i], depth + 1, get_opponent_color(color_on_turn), alpha, beta, goal_depth, first_move, 0)
+                    value = Heuristic.minimax(moves[i], depth + 1, get_opponent_color(
+                        color_on_turn), alpha, beta, goal_depth, first_move, 0)
                 best_value = min(value, best_value)
                 beta = min(beta, best_value)
                 if (beta <= alpha):
@@ -226,7 +239,8 @@ class Heuristic(object):
     @staticmethod
     def get_computer_move(board, choosed_level):
 
-        new_board_state = Heuristic.minimax(board, 0, board.computer_color, -1000000, 1000000, choosed_level, -1, -1)
+        new_board_state = Heuristic.minimax(
+            board, 0, board.computer_color, -1000000, 1000000, choosed_level, -1, -1)
         if (isinstance(new_board_state, Board)):
             print("------------------------------------------------")
             move = new_board_state.last_move.split(" ")
@@ -237,7 +251,6 @@ class Heuristic(object):
 
     @staticmethod
     def check_if_it_is_tie():
-
         if (Heuristic.last_computer_moves[0] != [] and Heuristic.last_computer_moves[0] == Heuristic.last_computer_moves[2] and Heuristic.last_computer_moves[0] == Heuristic.last_computer_moves[4]):
             return True
         elif (Heuristic.last_user_moves[0] != [] and Heuristic.last_user_moves[0] == Heuristic.last_user_moves[2] and Heuristic.last_user_moves[0] == Heuristic.last_user_moves[4]):

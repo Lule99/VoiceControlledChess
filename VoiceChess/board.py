@@ -105,7 +105,7 @@ class Board(object):
                 new_king = king.get_deep_copy()
                 new_king.x = king.x - 2
 
-                new_board.fields[king.y][king.x - 2] = new_king
+                new_board.fields[king.y][king.x - 2] = new_king.piece
 
                 if (get_piece_color(self.fields[king.y][king.x - 4]) == BLACK_COLOR):
                     new_board.fields[king.y][king.x - 1] = BLACK_ROOK
@@ -137,7 +137,7 @@ class Board(object):
                 new_king = king.get_deep_copy()
                 new_king.x = king.x + 2
 
-                new_board.fields[king.y][king.x - 2] = new_king
+                new_board.fields[king.y][king.x - 2] = new_king.piece
 
                 if (get_piece_color(self.fields[king.y][king.x - 4]) == BLACK_COLOR):
                     new_board.fields[king.y][king.x - 1] = BLACK_ROOK

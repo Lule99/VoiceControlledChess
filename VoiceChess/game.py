@@ -1,9 +1,11 @@
+from re import S
 from PySide2 import QtGui, QtCore
 from PySide2.QtWidgets import QMainWindow, QHBoxLayout, QPushButton, QVBoxLayout, QWidget
 from board_view import BoardView
 from my_threads import Worker
 from recording import VoiceRecorder
 from computerLogic import *
+from mcts import *
 
 
 class Game(QMainWindow):
@@ -59,8 +61,8 @@ class Game(QMainWindow):
             choosed_color = WHITE_COLOR
         else:
             choosed_color = BLACK_COLOR
-                
-        board = Board(choosed_color == 1)
+
+        board = Board(choosed_color == BLACK_COLOR)
         idle_moves_counter = 0
 
         if (choosed_color == WHITE_COLOR):
@@ -71,11 +73,24 @@ class Game(QMainWindow):
             idle_moves_counter += 1
 
         while (True):
-            pieces_remaining = count_pieces(board)
-            if (check_if_only_pawns_remaining(board)):
-                board = Heuristic.get_computer_move(board, choosed_level + 2) #ovde ces pozvati montecarlo ili minimax
+            if(self.settings[2] == 0):
+                pieces_remaining = count_pieces(board)
+                if (check_if_only_pawns_remaining(board)):
+                    # ovde ces pozvati montecarlo ili minimax
+                    board = Heuristic.get_computer_move(
+                        board, choosed_level + 2)
+                else:
+                    # ovde ces pozvati montecarlo ili minimax
+                    board = Heuristic.get_computer_move(board, choosed_level)
             else:
-                board = Heuristic.get_computer_move(board, choosed_level) #ovde ces pozvati montecarlo ili minimax
+                pieces_remaining = count_pieces(board)
+                if (choosed_color == WHITE_COLOR):
+                    board = MCTS.mcts_pred(
+                        Node(board), BLACK_COLOR)
+                else:
+                    board = MCTS.mcts_pred(
+                        Node(board), WHITE_COLOR)
+
             if (Heuristic.check_if_it_is_tie()):
                 print("Game ended tie because of third repeat of some situation..")
                 break
@@ -86,12 +101,14 @@ class Game(QMainWindow):
                 print("Stalemate! Tie game..")
                 break
             else:
-                if (pieces_remaining == count_pieces(board)):
-                    idle_moves_counter += 1
-                    if (idle_moves_counter == 50):
-                        print("Game ended tie because 50 moves are made without capturing any pieces..")
-                        break
+                # if (pieces_remaining == count_pieces(board)):
+                idle_moves_counter += 1
+                if (idle_moves_counter == 50):
+                    print(
+                        "Game ended tie because 50 moves are made without capturing any pieces..")
+                    break
                 else:
+                    print("blablablablablfdfdgdfg")
                     idle_moves_counter = 0
 
                 progress_callback.emit(board)
@@ -112,7 +129,8 @@ class Game(QMainWindow):
                 if (pieces_remaining == count_pieces(board)):
                     idle_moves_counter += 1
                     if (idle_moves_counter == 50):
-                        print("Game ended tie because 50 moves are made without capturing any pieces..")
+                        print(
+                            "Game ended tie because 50 moves are made without capturing any pieces..")
                         break
                 else:
                     idle_moves_counter = 0
