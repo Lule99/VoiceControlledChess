@@ -1,4 +1,5 @@
 from pieces import *
+from service import *
 
 
 class Board(object):
@@ -94,6 +95,8 @@ class Board(object):
     def left_castling(self, king):
 
         moves = []
+        if (king.x != 4):
+            return moves
 
         if (self.fields[king.y][king.x - 1] == EMPTY_FIELD and self.fields[king.y][king.x - 2] == EMPTY_FIELD and
             self.fields[king.y][king.x - 3] == EMPTY_FIELD and (not self.fields[king.y][king.x - 4] == EMPTY_FIELD) and
@@ -129,31 +132,36 @@ class Board(object):
     def right_castling(self, king):
 
         moves = []
+        if (king.x != 4):
+            return moves
 
-        if (self.fields[king.y][king.x + 1] == EMPTY_FIELD and self.fields[king.y][king.x + 2] == EMPTY_FIELD and (not self.fields[king.y][king.x + 3] == EMPTY_FIELD) and
+        if (self.fields[king.y][king.x + 1] == EMPTY_FIELD and self.fields[king.y][king.x + 2] == EMPTY_FIELD and (not (self.fields[king.y][king.x + 3] == EMPTY_FIELD)) and
             self.fields[king.y][king.x + 3] in ROOK and get_piece_color(self.fields[king.y][king.x + 3]) == king.color):
+
             if (king.no_opponent_king_around(self, [0, 2])):
                 new_board = self.get_deep_copy()
                 new_king = king.get_deep_copy()
-                new_king.x = king.x + 2
+                #new_king.x = king.x + 2
 
                 new_board.fields[king.y][king.x + 2] = new_king.piece
 
-                if (get_piece_color(self.fields[king.y][king.x +3]) == BLACK_COLOR):
+                if (get_piece_color(self.fields[king.y][king.x + 3]) == BLACK_COLOR):
                     new_board.fields[king.y][king.x + 1] = BLACK_ROOK
                 else:
                     new_board.fields[king.y][king.x + 1] = WHITE_ROOK
 
                 new_board.fields[king.y][king.x] = EMPTY_FIELD
                 new_board.fields[king.y][king.x + 3] = EMPTY_FIELD
+
                 if (king.color == self.computer_color):
-                    new_board.computer_king_position = [new_king.y, new_king.x]
+                    new_board.computer_king_position = [new_king.y, new_king.x + 2]#dodato
                     new_board.computer_king_moved = True
                     new_board.last_move = generate_string_for_move(king.x, king.y, [0,2])
                 else:
-                    new_board.user_king_position = [new_king.y, new_king.x]
+                    new_board.user_king_position = [new_king.y, new_king.x + 2]#dodato
                     new_board.user_king_moved = True
                     new_board.last_move = generate_string_for_move(king.x, king.y, [0,2])
+
                 moves.append(new_board)
 
         return moves

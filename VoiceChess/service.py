@@ -301,10 +301,10 @@ def evaluate_castling(coordinates_from, move, board):
         new_board.fields[y][x + 3] = EMPTY_FIELD
 
         if (get_piece_color(piece) == board.computer_color):
-            new_board.computer_king_position = [y, x]
+            new_board.computer_king_position = [y, x + 2]
             new_board.computer_king_moved = True
         else:
-            new_board.user_king_position = [y, x]
+            new_board.user_king_position = [y, x + 2]
             new_board.user_king_moved = True
 
     else:
@@ -317,10 +317,10 @@ def evaluate_castling(coordinates_from, move, board):
         new_board.fields[y][x - 4] = EMPTY_FIELD
 
         if (get_piece_color(piece) == board.computer_color):
-            new_board.computer_king_position = [y, x]
+            new_board.computer_king_position = [y, x - 2]
             new_board.computer_king_moved = True
         else:
-            new_board.user_king_position = [y, x]
+            new_board.user_king_position = [y, x - 2]
             new_board.user_king_moved = True
 
     return new_board
