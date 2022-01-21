@@ -55,7 +55,7 @@ class Board(object):
             new_row = []
 
             for k in range(0, 8):
-                new_row.append(self.fields[i][k] + "")
+                new_row.append(self.fields[i][k])
 
             new_board.fields.append(new_row)
 
@@ -137,12 +137,12 @@ class Board(object):
                 new_king = king.get_deep_copy()
                 new_king.x = king.x + 2
 
-                new_board.fields[king.y][king.x - 2] = new_king.piece
+                new_board.fields[king.y][king.x + 2] = new_king.piece
 
-                if (get_piece_color(self.fields[king.y][king.x - 4]) == BLACK_COLOR):
-                    new_board.fields[king.y][king.x - 1] = BLACK_ROOK
+                if (get_piece_color(self.fields[king.y][king.x +3]) == BLACK_COLOR):
+                    new_board.fields[king.y][king.x + 1] = BLACK_ROOK
                 else:
-                    new_board.fields[king.y][king.x - 1] = WHITE_ROOK
+                    new_board.fields[king.y][king.x + 1] = WHITE_ROOK
 
                 new_board.fields[king.y][king.x] = EMPTY_FIELD
                 new_board.fields[king.y][king.x + 3] = EMPTY_FIELD

@@ -1,5 +1,5 @@
 from constants import *
-#from pieces import *
+from pieces import *
 
 
 def empty_field(field_value):
@@ -289,40 +289,38 @@ def evaluate_castling(coordinates_from, move, board):
     new_board = board.get_deep_copy()
     x = coordinates_from[0]
     y = coordinates_from[1]
-    king = King(new_board.fields[y][x], x, y, new_board)
+    piece = board.fields[y][x]
 
     if (move[1] > 0):
 
-        rook = new_board.fields[king.y][king.x + 3]
+        rook = new_board.fields[y][x + 3]
 
-        king.x = king.x + 2
-
-        new_board.fields[y][x + 2] = king.piece
+        new_board.fields[y][x + 2] = piece
         new_board.fields[y][x + 1] = rook
         new_board.fields[y][x] = EMPTY_FIELD
         new_board.fields[y][x + 3] = EMPTY_FIELD
 
-        if (king.color == board.computer_color):
-            new_board.computer_king_position = [king.y, king.x]
+        if (get_piece_color(piece) == board.computer_color):
+            new_board.computer_king_position = [y, x]
             new_board.computer_king_moved = True
         else:
-            new_board.user_king_position = [king.y, king.x]
+            new_board.user_king_position = [y, x]
             new_board.user_king_moved = True
+
     else:
 
-        rook = new_board.fields[king.y][king.x - 4]
-        king.x = king.x - 2
+        rook = new_board.fields[y][x - 4]
 
-        new_board.fields[y][x - 2] = king.piece
+        new_board.fields[y][x - 2] = piece
         new_board.fields[y][x - 1] = rook
         new_board.fields[y][x] = EMPTY_FIELD
         new_board.fields[y][x - 4] = EMPTY_FIELD
 
-        if (king.color == board.computer_color):
-            new_board.computer_king_position = [king.y, king.x]
+        if (get_piece_color(piece) == board.computer_color):
+            new_board.computer_king_position = [y, x]
             new_board.computer_king_moved = True
         else:
-            new_board.user_king_position = [king.y, king.x]
+            new_board.user_king_position = [y, x]
             new_board.user_king_moved = True
 
     return new_board

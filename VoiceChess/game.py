@@ -101,14 +101,13 @@ class Game(QMainWindow):
                 print("Stalemate! Tie game..")
                 break
             else:
-                # if (pieces_remaining == count_pieces(board)):
-                idle_moves_counter += 1
-                if (idle_moves_counter == 50):
-                    print(
-                        "Game ended tie because 50 moves are made without capturing any pieces..")
-                    break
+                if (pieces_remaining == count_pieces(board)):
+                    idle_moves_counter += 1
+                    if (idle_moves_counter == 50):
+                        print(
+                            "Game ended tie because 50 moves are made without capturing any pieces..")
+                        break
                 else:
-                    print("blablablablablfdfdgdfg")
                     idle_moves_counter = 0
 
                 progress_callback.emit(board)
@@ -126,6 +125,7 @@ class Game(QMainWindow):
                     print("Check!\n")
                 pieces_remaining = count_pieces(board)
                 board = get_player_move(board)
+
                 if (pieces_remaining == count_pieces(board)):
                     idle_moves_counter += 1
                     if (idle_moves_counter == 50):
