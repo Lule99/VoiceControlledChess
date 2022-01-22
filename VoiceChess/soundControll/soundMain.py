@@ -1,23 +1,23 @@
-import datetime
-from augmentations import *
-from Utilities import *
-import librosa
 import librosa.display
-import numpy as np
-from matplotlib import pyplot as plt
 from pydub import AudioSegment
+
+import model
+from Utilities import *
+from augmentations import *
 
 
 def main():
-    begin = datetime.datetime.now()
-    print("----------------------------------------------------\nPocetak: ", begin)
-    to_wav()
-    augment()
-    to_mel()
-    report()
-    end = datetime.datetime.now()
-    print("----------------------------------------------------\nKraj: ", end)
-    print("*\n*\n*\n*** Trajanje: ", end - begin)
+    #model.run("slova")
+    model.run("cifre")
+    # begin = datetime.datetime.now()
+    # print("----------------------------------------------------\nPocetak: ", begin)
+    # to_wav()
+    # augment()
+    # to_mel()
+    # report()
+    # end = datetime.datetime.now()
+    # print("----------------------------------------------------\nKraj: ", end)
+    # print("*\n*\n*\n*** Trajanje: ", end - begin)
 
 
 def to_wav():
@@ -36,24 +36,6 @@ def to_wav():
                     wav_file = pojacaj(wav_file)
 
                 wav_file.export(export_dest)
-
-
-def dump_to_mel(file_name, import_path, dump_to_path):
-    data, sr = librosa.load(import_path)
-
-    fig = plt.figure(figsize=[1, 1])
-    ax = fig.add_subplot(111)
-    ax.axes.get_xaxis().set_visible(False)
-    ax.axes.get_yaxis().set_visible(False)
-    ax.set_frame_on(False)
-
-    s = librosa.feature.melspectrogram(y=data, sr=sr)
-    librosa.display.specshow(librosa.power_to_db(s, ref=np.max), x_axis='time', y_axis='mel', fmin=50, fmax=280)
-
-    mel_path = dump_to_path + '\\' + file_name[:-4] + '.jpg'
-    plt.savefig(mel_path, dpi=500, bbox_inches='tight', pad_inches=0)
-
-    plt.close()
 
 
 def to_mel():
