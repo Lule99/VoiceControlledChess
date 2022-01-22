@@ -234,7 +234,10 @@ def load(to_load):
 
 
 ####GPU Check and detalies####
-def gpu_check_CUDA():
-    physical_devices = tf.config.experimental.list_physical_devices('GPU')
-    print("Broj detektovanih GPU: ", len(physical_devices))
-    tf.config.experimental.set_memory_growth(physical_devices[0], True)
+def gpu_check_CUDA(useCuda):
+    if useCuda:
+        physical_devices = tf.config.experimental.list_physical_devices('GPU')
+        print("Broj detektovanih GPU: ", len(physical_devices))
+        tf.config.experimental.set_memory_growth(physical_devices[0], True)
+    else:
+        os.environ["CUDA_VISIBLE_DEVICES"] = "-1"

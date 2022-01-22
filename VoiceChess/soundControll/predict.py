@@ -63,7 +63,35 @@ def predict():
     print("*\n*\n*\nWinner: ", max(result, key=result.get))
 
 
+def predict_num(img):
+    model = load_model("c")
+    prediction = model.predict(img)
 
+    result = {}
+
+    for cls in klase_cifre:
+        result[cls] = prediction[0][klase_cifre.index(cls)]*100
+
+    print(prediction)
+    print(30*"*")
+    print(result)
+
+    print("*\n*\n*\nWinner: ", max(result, key=result.get))
+
+def predict_letter(img):
+    model = load_model("s")
+    prediction = model.predict(img)
+
+    result = {}
+
+    for cls in klase_slova:
+        result[cls] = prediction[0][klase_slova.index(cls)]*100
+
+    print(prediction)
+    print(30*"*")
+    print(result)
+
+    print("*\n*\n*\nWinner: ", max(result, key=result.get))
 
 
 if __name__ == "__main__":

@@ -5,8 +5,8 @@ from Utilities import *
 
 
 
-def run(to_load):
-    gpu_check_CUDA()
+def run(to_load, useCuda):
+    gpu_check_CUDA(useCuda)
     X, X_test, y, y_test = load(to_load)
 
 
@@ -14,7 +14,7 @@ def run(to_load):
     model.summary()
     model.compile(loss="sparse_categorical_crossentropy", optimizer='adam', metrics=['accuracy'])
     # model.fit(X, y, batch_size=64, epochs=10, validation_split=0.15, callbacks=[tensorboard])      mapiranje na logs za prikaz
-    model.fit(X, y, batch_size=16, epochs=4, validation_split=0.15)
+    model.fit(X, y, batch_size=16, epochs=5, validation_split=0.15)
 
     print("Model successfully trained!")
     print("Running tests...")

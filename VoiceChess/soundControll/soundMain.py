@@ -1,5 +1,6 @@
+from datetime import datetime
+
 import librosa.display
-from pydub import AudioSegment
 
 import model
 from Utilities import *
@@ -7,17 +8,28 @@ from augmentations import *
 
 
 def main():
-    #model.run("slova")
-    model.run("cifre")
-    # begin = datetime.datetime.now()
+
+    # begin = datetime.now()
     # print("----------------------------------------------------\nPocetak: ", begin)
     # to_wav()
     # augment()
     # to_mel()
     # report()
-    # end = datetime.datetime.now()
+    # end = datetime.now()
     # print("----------------------------------------------------\nKraj: ", end)
     # print("*\n*\n*\n*** Trajanje: ", end - begin)
+    # print("\nTRENING\n")
+    # begin = datetime.now()
+    # model.run("slova", False)
+    # end = datetime.now()
+    # print("----------------------------------------------------\nKraj: ", end)
+    # print("*\n*\n*\n*** Trajanje: ", end - begin)
+    # begin = datetime.now()
+    # print("\nTRENING\n")
+    # model.run("cifre", True)
+    # end = datetime.now()
+    # print("*\n*\n*\n*** Trajanje: ", end - begin)
+    pass
 
 
 def to_wav():
