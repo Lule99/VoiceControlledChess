@@ -1,5 +1,5 @@
 from constants import *
-#from pieces import *
+from pieces import *
 
 
 def empty_field(field_value):
@@ -41,10 +41,12 @@ def get_legal_moves_on_lines(piece, board):
             if (get_piece_color(board.fields[piece.y][piece.x + x_counter]) == piece.color):
                 break
             else:
-                moves.append(board.evaluate_move(piece.piece, piece.x, piece.y, [0, x_counter]))
+                moves.append(board.evaluate_move(
+                    piece.piece, piece.x, piece.y, [0, x_counter]))
                 break
         else:
-            moves.append(board.evaluate_move(piece.piece, piece.x, piece.y, [0, x_counter]))
+            moves.append(board.evaluate_move(
+                piece.piece, piece.x, piece.y, [0, x_counter]))
         x_counter += 1
 
     x_counter = -1
@@ -54,10 +56,12 @@ def get_legal_moves_on_lines(piece, board):
             if (get_piece_color(board.fields[piece.y][piece.x + x_counter]) == piece.color):
                 break
             else:
-                moves.append(board.evaluate_move(piece.piece, piece.x, piece.y, [0, x_counter]))
+                moves.append(board.evaluate_move(
+                    piece.piece, piece.x, piece.y, [0, x_counter]))
                 break
         else:
-            moves.append(board.evaluate_move(piece.piece, piece.x, piece.y, [0, x_counter]))
+            moves.append(board.evaluate_move(
+                piece.piece, piece.x, piece.y, [0, x_counter]))
         x_counter -= 1
 
     while (piece.y + y_counter <= 7):
@@ -65,10 +69,12 @@ def get_legal_moves_on_lines(piece, board):
             if (get_piece_color(board.fields[piece.y + y_counter][piece.x]) == piece.color):
                 break
             else:
-                moves.append(board.evaluate_move(piece.piece, piece.x, piece.y, [y_counter, 0]))
+                moves.append(board.evaluate_move(
+                    piece.piece, piece.x, piece.y, [y_counter, 0]))
                 break
         else:
-            moves.append(board.evaluate_move(piece.piece, piece.x, piece.y, [y_counter, 0]))
+            moves.append(board.evaluate_move(
+                piece.piece, piece.x, piece.y, [y_counter, 0]))
         y_counter += 1
 
     y_counter = -1
@@ -78,10 +84,12 @@ def get_legal_moves_on_lines(piece, board):
             if (get_piece_color(board.fields[piece.y + y_counter][piece.x]) == piece.color):
                 break
             else:
-                moves.append(board.evaluate_move(piece.piece, piece.x, piece.y, [y_counter, 0]))
+                moves.append(board.evaluate_move(
+                    piece.piece, piece.x, piece.y, [y_counter, 0]))
                 break
         else:
-            moves.append(board.evaluate_move(piece.piece, piece.x, piece.y, [y_counter, 0]))
+            moves.append(board.evaluate_move(
+                piece.piece, piece.x, piece.y, [y_counter, 0]))
         y_counter -= 1
 
     return moves
@@ -98,10 +106,12 @@ def get_legal_moves_on_diagonales(piece, board):
             if (get_piece_color(board.fields[piece.y + counter_y][piece.x + counter_x]) == piece.color):
                 break
             else:
-                moves.append(board.evaluate_move(piece.piece, piece.x, piece.y, [counter_y, counter_x]))
+                moves.append(board.evaluate_move(
+                    piece.piece, piece.x, piece.y, [counter_y, counter_x]))
                 break
         else:
-            moves.append(board.evaluate_move(piece.piece, piece.x, piece.y, [counter_y, counter_x]))
+            moves.append(board.evaluate_move(
+                piece.piece, piece.x, piece.y, [counter_y, counter_x]))
         counter_x += 1
         counter_y += 1
 
@@ -113,10 +123,12 @@ def get_legal_moves_on_diagonales(piece, board):
             if (get_piece_color(board.fields[piece.y + counter_y][piece.x + counter_x]) == piece.color):
                 break
             else:
-                moves.append(board.evaluate_move(piece.piece, piece.x, piece.y, [counter_y, counter_x]))
+                moves.append(board.evaluate_move(
+                    piece.piece, piece.x, piece.y, [counter_y, counter_x]))
                 break
         else:
-            moves.append(board.evaluate_move(piece.piece, piece.x, piece.y, [counter_y, counter_x]))
+            moves.append(board.evaluate_move(
+                piece.piece, piece.x, piece.y, [counter_y, counter_x]))
         counter_x -= 1
         counter_y += 1
 
@@ -128,10 +140,12 @@ def get_legal_moves_on_diagonales(piece, board):
             if (get_piece_color(board.fields[piece.y + counter_y][piece.x + counter_x]) == piece.color):
                 break
             else:
-                moves.append(board.evaluate_move(piece.piece, piece.x, piece.y, [counter_y, counter_x]))
+                moves.append(board.evaluate_move(
+                    piece.piece, piece.x, piece.y, [counter_y, counter_x]))
                 break
         else:
-            moves.append(board.evaluate_move(piece.piece, piece.x, piece.y, [counter_y, counter_x]))
+            moves.append(board.evaluate_move(
+                piece.piece, piece.x, piece.y, [counter_y, counter_x]))
         counter_x += 1
         counter_y -= 1
 
@@ -143,10 +157,12 @@ def get_legal_moves_on_diagonales(piece, board):
             if (get_piece_color(board.fields[piece.y + counter_y][piece.x + counter_x]) == piece.color):
                 break
             else:
-                moves.append(board.evaluate_move(piece.piece, piece.x, piece.y, [counter_y, counter_x]))
+                moves.append(board.evaluate_move(
+                    piece.piece, piece.x, piece.y, [counter_y, counter_x]))
                 break
         else:
-            moves.append(board.evaluate_move(piece.piece, piece.x, piece.y, [counter_y, counter_x]))
+            moves.append(board.evaluate_move(
+                piece.piece, piece.x, piece.y, [counter_y, counter_x]))
         counter_x -= 1
         counter_y -= 1
 
@@ -228,10 +244,10 @@ def check_if_format_is_valid(next_move):
     try:
         field_from, field_to = next_move.split(" ")
         if not (field_from[0] == "A" or field_from[0] == "B" or field_from[0] == "C" or field_from[0] == "D"
-            or field_from[0] == "E" or field_from[0] == "F" or field_from[0] == "G" or field_from[0] == "H"):
+                or field_from[0] == "E" or field_from[0] == "F" or field_from[0] == "G" or field_from[0] == "H"):
             return False
         if not (field_to[0] == "A" or field_to[0] == "B" or field_to[0] == "C" or field_to[0] == "D"
-            or field_to[0] == "E" or field_to[0] == "F" or field_to[0] == "G" or field_to[0] == "H"):
+                or field_to[0] == "E" or field_to[0] == "F" or field_to[0] == "G" or field_to[0] == "H"):
             return False
         if (int(field_from[1]) > 8 or int(field_from[1]) < 1):
             return False
@@ -245,13 +261,17 @@ def check_if_format_is_valid(next_move):
 def check_if_move_is_valid(next_move, board):
 
     field_from, field_to = next_move.split(" ")
-    coordinates_from = [convertor_from_char_to_position(field_from[0]), 8 - int(field_from[1])]
-    coordinates_to = [convertor_from_char_to_position(field_to[0]), 8 - int(field_to[1])]
-    move = [coordinates_to[1] - coordinates_from[1], coordinates_to[0] - coordinates_from[0]]
+    coordinates_from = [convertor_from_char_to_position(
+        field_from[0]), 8 - int(field_from[1])]
+    coordinates_to = [convertor_from_char_to_position(
+        field_to[0]), 8 - int(field_to[1])]
+    move = [coordinates_to[1] - coordinates_from[1],
+            coordinates_to[0] - coordinates_from[0]]
     if (is_it_castling(coordinates_from, move, board)):
         new_board_state = evaluate_castling(coordinates_from, move, board)
     else:
-        new_board_state = board.evaluate_move(board.fields[coordinates_from[1]][coordinates_from[0]], coordinates_from[0], coordinates_from[1], move)
+        new_board_state = board.evaluate_move(
+            board.fields[coordinates_from[1]][coordinates_from[0]], coordinates_from[0], coordinates_from[1], move)
 
     return check_if_thats_possible_move(board, new_board_state)
 
@@ -269,40 +289,38 @@ def evaluate_castling(coordinates_from, move, board):
     new_board = board.get_deep_copy()
     x = coordinates_from[0]
     y = coordinates_from[1]
-    king = King(new_board.fields[y][x], x, y, new_board)
+    piece = board.fields[y][x]
 
     if (move[1] > 0):
 
-        rook = new_board.fields[king.y][king.x + 3]
+        rook = new_board.fields[y][x + 3]
 
-        king.x = king.x + 2
-
-        new_board.fields[y][x + 2] = king.piece
+        new_board.fields[y][x + 2] = piece
         new_board.fields[y][x + 1] = rook
         new_board.fields[y][x] = EMPTY_FIELD
         new_board.fields[y][x + 3] = EMPTY_FIELD
 
-        if (king.color == board.computer_color):
-            new_board.computer_king_position = [king.y, king.x]
+        if (get_piece_color(piece) == board.computer_color):
+            new_board.computer_king_position = [y, x + 2]
             new_board.computer_king_moved = True
         else:
-            new_board.user_king_position = [king.y, king.x]
+            new_board.user_king_position = [y, x + 2]
             new_board.user_king_moved = True
+
     else:
 
-        rook = new_board.fields[king.y][king.x - 4]
-        king.x = king.x - 2
+        rook = new_board.fields[y][x - 4]
 
-        new_board.fields[y][x - 2] = king.piece
+        new_board.fields[y][x - 2] = piece
         new_board.fields[y][x - 1] = rook
         new_board.fields[y][x] = EMPTY_FIELD
         new_board.fields[y][x - 4] = EMPTY_FIELD
 
-        if (king.color == board.computer_color):
-            new_board.computer_king_position = [king.y, king.x]
+        if (get_piece_color(piece) == board.computer_color):
+            new_board.computer_king_position = [y, x - 2]
             new_board.computer_king_moved = True
         else:
-            new_board.user_king_position = [king.y, king.x]
+            new_board.user_king_position = [y, x - 2]
             new_board.user_king_moved = True
 
     return new_board
@@ -310,7 +328,8 @@ def evaluate_castling(coordinates_from, move, board):
 
 def check_if_thats_possible_move(board, new_board_state):
 
-    possible_board_states = board.get_possible_moves(get_opponent_color(board.computer_color))
+    possible_board_states = board.get_possible_moves(
+        get_opponent_color(board.computer_color))
     for board_state in possible_board_states:
         if (board_state == new_board_state):
             return new_board_state
