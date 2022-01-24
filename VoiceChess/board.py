@@ -141,7 +141,6 @@ class Board(object):
             if (king.no_opponent_king_around(self, [0, 2])):
                 new_board = self.get_deep_copy()
                 new_king = king.get_deep_copy()
-                #new_king.x = king.x + 2
 
                 new_board.fields[king.y][king.x + 2] = new_king.piece
 
@@ -238,6 +237,7 @@ class Board(object):
 
         counter_x = 1
         counter_y = 1
+
         #dole desno
         while (king_position[1] + counter_x < 8 and king_position[0] + counter_y < 8):
             if (not self.fields[king_position[0] + counter_y][king_position[1] + counter_x] == EMPTY_FIELD):
@@ -250,6 +250,7 @@ class Board(object):
 
         counter_x = 1
         counter_y = 1
+
         #dole levo
         while (king_position[1] - counter_x >= 0 and king_position[0] + counter_y < 8):
             if (not self.fields[king_position[0] + counter_y][king_position[1] - counter_x] == EMPTY_FIELD):
@@ -262,6 +263,7 @@ class Board(object):
 
         counter_x = 1
         counter_y = 1
+
         #gore desno
         while (king_position[1] + counter_x < 8 and king_position[0] - counter_y >= 0):
             if (not self.fields[king_position[0] - counter_y][king_position[1] + counter_x] == EMPTY_FIELD):
@@ -274,6 +276,7 @@ class Board(object):
 
         counter_x = 1
         counter_y = 1
+
         #gore levo
         while (king_position[1] - counter_x >= 0 and king_position[0] - counter_y >= 0):
             if (not self.fields[king_position[0] - counter_y][king_position[1] - counter_x] == EMPTY_FIELD):
@@ -366,7 +369,8 @@ class Board(object):
                 else:
                     pawn_become_queen = BLACK_QUEEN
 
-                new_board.fields[new_piece.y][new_piece.x] = pawn_become_queen
+                new_board.fields[new_y_position][new_x_position] = pawn_become_queen
+
             # check for el passant
             elif (self.fields[new_y_position][new_x_position] == EMPTY_FIELD and move[1] != 0):
                 new_board.fields[piece_y][new_x_position] = EMPTY_FIELD
