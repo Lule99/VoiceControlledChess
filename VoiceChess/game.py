@@ -1,15 +1,14 @@
-import speech_recognition
-from pydub import AudioSegment, silence
-from soundControll.recorder import *
+import time
 
 from PySide2 import QtGui, QtCore
 from PySide2.QtWidgets import QMainWindow, QHBoxLayout, QPushButton, QVBoxLayout, QWidget
+from keras.models import load_model
+
+from algorithm2 import *
 from board_view import BoardView
 from my_threads import Worker
 from recording import VoiceRecorder
-from computerLogic import *
-from algorithm2 import *
-from keras.models import load_model
+from soundControll.recorder import *
 
 
 class Game(QMainWindow):
@@ -128,10 +127,13 @@ class Game(QMainWindow):
                         counter += 1
 
                         if counter == 2:
-                            board = move(selekcija+" "+odrediste)
-                            if board == []:
+                            new_board = move(selekcija+" "+odrediste, board)
+
+                            if new_board == []:
                                 counter = 0
                                 continue
+                            else:
+                                board = new_board
 
                             progress_callback.emit(board)
                             Heuristic.write_player_move(board)
@@ -201,6 +203,7 @@ class Game(QMainWindow):
                             recognizer.adjust_for_ambient_noise(mic, duration=0.6)
                             recognizer.pause_threshold = 0.8  # default 0.8
                             recognizer.non_speaking_duration = 0.25
+                            input("Nastavi:\n>>")
                             print("Pricaj")
                             audio = recognizer.listen(mic)
                             print("Obrada zvuka...")
@@ -244,10 +247,13 @@ class Game(QMainWindow):
                             counter += 1
 
                             if counter == 2:
-                                board = move(selekcija+" "+odrediste)
-                                if board == []:
+                                new_board = move(selekcija + " " + odrediste, board)
+
+                                if new_board == []:
                                     counter = 0
                                     continue
+                                else:
+                                    board = new_board
 
                                 progress_callback.emit(board)
                                 Heuristic.write_player_move(board)

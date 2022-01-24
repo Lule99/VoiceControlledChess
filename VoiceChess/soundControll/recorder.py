@@ -11,9 +11,9 @@ import speech_recognition
 from matplotlib import pyplot as plt
 from pydub import AudioSegment, silence
 from scipy.io.wavfile import write
-from soundControll.Utilities import img_size, dump_to_mel
-from soundControll.augmentations import pojacaj
-from soundControll.predict import predict_letter, predict_number
+from VoiceChess.soundControll.Utilities import img_size, dump_to_mel
+from VoiceChess.soundControll.augmentations import pojacaj
+from VoiceChess.soundControll.predict import predict_letter, predict_number
 
 
 class VoiceRecorder:
@@ -76,7 +76,7 @@ def my_record():
                 else:
                     count = 0
                     for audF in words:
-                        audF.export(count.__str__()+".wav")
+                        #audF.export(count.__str__()+".wav")
                         count+=1
                     print(len(words))
                     raise Exception("Greska u obradi zvuka")

@@ -69,7 +69,11 @@ def predict_number(img):
     print(30*"*")
     print(result)
 
-    print("*\n*\n*\nWinner: ", max(result, key=result.get))
+    ret_val = max(result, key=result.get)
+
+    print("*\n*\n*\nWinner: ",ret_val)
+    return ret_val
+
 
 def predict_letter(img):
     model = load_model("s")
@@ -84,7 +88,11 @@ def predict_letter(img):
     print(30*"*")
     print(result)
 
-    print("*\n*\n*\nWinner: ", max(result, key=result.get))
+    ret_val = max(result, key=result.get)
+
+    print("*\n*\n*\nWinner: ", ret_val)
+
+    return ret_val
 
 
 if __name__ == "__main__":
