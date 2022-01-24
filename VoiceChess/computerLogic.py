@@ -1,4 +1,5 @@
 from board import *
+from math import inf
 
 
 class Heuristic(object):
@@ -201,6 +202,120 @@ class Heuristic(object):
                     break
 
             return best_value
+
+    @staticmethod
+    def optimized_minimax(board, depth, color_on_turn, alpha, beta, first_move, first_user_move, possible_moves, goal_depth=4):
+
+        if (depth == goal_depth):
+            return Heuristic.calculate(board)
+
+        if (board.computer_color == color_on_turn):
+            best_value = -100000
+            #moves = Heuristic.get_best_moves_according_to_heuristic(board.get_possible_moves(color_on_turn), True)
+            moves = board.get_possible_moves(color_on_turn)
+            if (len(moves) == 0):
+                if (not board.check_if_it_is_check(color_on_turn)):
+                    return 0
+                else:
+                    return best_value
+
+            if (first_move == -1):
+
+                move_to_make = -1
+                moves = possible_moves
+                Heuristic.possible_first_moves = moves
+                for i in range(0, len(moves)):
+                    if (Heuristic.check_for_possible_tie_computer(moves[i])):
+                        value = 0
+                    else:
+                        value = Heuristic.optimized_minimax(moves[i], depth + 1, get_opponent_color(
+                            color_on_turn), alpha, beta, i, first_user_move, [])
+                    if (best_value < value):
+                        best_value = value
+                        move_to_make = i
+                    alpha = max(alpha, best_value)
+                    if (beta <= alpha):
+                        break
+                Heuristic.write_computer_move(
+                    Heuristic.possible_first_moves[move_to_make])
+
+                return Heuristic.possible_first_moves[move_to_make]
+                #return best_value
+            else:
+                for i in range(0, len(moves)):
+                    value = Heuristic.optimized_minimax(moves[i], depth + 1, get_opponent_color(
+                        color_on_turn), alpha, beta, first_move, first_user_move, [])
+                    best_value = max(value, best_value)
+                    alpha = max(alpha, best_value)
+                    if (beta <= alpha):
+                        break
+
+                return best_value
+
+        else:
+            best_value = 100000
+            #moves = Heuristic.get_best_moves_according_to_heuristic(board.get_possible_moves(color_on_turn), False)
+            moves = board.get_possible_moves(color_on_turn)
+            if (len(moves) == 0):
+                if (not board.check_if_it_is_check(color_on_turn)):
+                    return 0
+                else:
+                    # ako je sah mat, skaliraj ga
+                    best_value = best_value * (goal_depth + 1 - depth)
+
+            for i in range(0, len(moves)):
+                if (first_user_move == -1 and Heuristic.check_for_possible_tie_user(moves[i])):
+                    value = 0
+                else:
+                    value = Heuristic.optimized_minimax(moves[i], depth + 1, get_opponent_color(
+                        color_on_turn), alpha, beta, first_move, 0, [])
+                best_value = min(value, best_value)
+                beta = min(beta, best_value)
+                if (beta <= alpha):
+                    break
+
+            return best_value
+
+    @staticmethod
+    def get_best_moves_according_to_heuristic(possible_moves, searching_for_max, number_of_moves):
+
+        if (len(possible_moves) < number_of_moves):
+            number_of_moves = len(possible_moves)
+
+        return Heuristic.Nmaxelements(possible_moves, number_of_moves, searching_for_max)
+
+    @staticmethod
+    def Nmaxelements(list, N, biggest):
+        final_list = []
+
+        if (biggest):
+            for i in range(0, N):
+                max1 = -inf
+                index = -1
+
+                for j in range(len(list)):
+                    value = Heuristic.calculate(list[j])
+                    if value > max1:
+                        max1 = value
+                        index = j
+
+                final_list.append(list[index])
+                del list[index]
+        else:
+            for i in range(0, N):
+                max1 = inf
+                index = -1
+
+                for j in range(len(list)):
+                    value = Heuristic.calculate(list[j])
+                    if value < max1:
+                        max1 = value
+                        index = j
+
+                final_list.append(list[index])
+                del list[index]
+
+        return final_list
 
     @staticmethod
     def check_for_possible_tie_computer(board):

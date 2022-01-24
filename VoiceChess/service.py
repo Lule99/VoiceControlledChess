@@ -1,5 +1,7 @@
 from constants import *
 from pieces import *
+from chess import Board
+import numpy as np
 
 
 def empty_field(field_value):
@@ -400,3 +402,44 @@ def check_if_only_pawns_remaining(board):
                 return False
 
     return True
+
+
+def convert_board_to_matrix(board: Board):
+    piece_dict = {"P": 1, "N": 1, "B": 1, "R": 1, "Q": 1, "K": 1,
+                      "p": -1, "n": -1, "b": -1, "r": -1, "q": -1, "k": -1}
+
+    state = np.zeros(768)
+    idx = 0
+    for k in piece_dict.keys():
+        for i in range(64):
+            piece = board.piece_at(i)
+            if piece is not None:
+                turn = 1 if board.turn else -1
+                state[idx] = piece_dict[k] * turn if k == piece.symbol() else 0
+            else:
+                state[idx] = 0
+
+            idx += 1
+
+    return state
+
+
+def convert_matrix_to_array(board, white_on_turn):
+    piece_dict = {"P": 1, "N": 1, "B": 1, "R": 1, "Q": 1, "K": 1,
+                      "p": -1, "n": -1, "b": -1, "r": -1, "q": -1, "k": -1}
+
+    state = np.zeros(768)
+    idx = 0
+    for k in piece_dict.keys():
+        for i in range(8):
+            for j in range(8):
+                piece = board[i][j]
+                if piece is not EMPTY_FIELD:
+                    turn = 1 if white_on_turn else -1
+                    state[idx] = piece_dict[k] * turn if k == piece else 0
+                else:
+                    state[idx] = 0
+
+                idx += 1
+
+    return state

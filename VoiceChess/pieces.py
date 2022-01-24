@@ -1,9 +1,8 @@
 from service import *
 
-#Piece parent class
 class Piece(object):
 
-    def __init__(self, piece, x_position, y_position, board):#BICE OBRISANO
+    def __init__(self, piece, x_position, y_position, board):
 
         self.piece = piece
         self.color = get_piece_color(piece)
@@ -11,7 +10,7 @@ class Piece(object):
         self.y = y_position
         self.board = board
 
-    def __str__(self):#bice obrisano
+    def __str__(self):
         return self.piece
 
     def get_legal_moves(self):
