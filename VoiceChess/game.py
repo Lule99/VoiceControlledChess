@@ -1,4 +1,7 @@
-from re import S
+import speech_recognition
+from pydub import AudioSegment, silence
+from soundControll.recorder import *
+
 from PySide2 import QtGui, QtCore
 from PySide2.QtWidgets import QMainWindow, QHBoxLayout, QPushButton, QVBoxLayout, QWidget
 from board_view import BoardView
@@ -66,14 +69,80 @@ class Game(QMainWindow):
         board = Board(choosed_color == BLACK_COLOR)
         idle_moves_counter = 0
 
-        if (choosed_color == WHITE_COLOR):
-            board = get_player_move(board)
-            progress_callback.emit(board)
-
-            Heuristic.write_player_move(board)
-            idle_moves_counter += 1
-
         model = load_model('model.h5')
+
+        recognizer = speech_recognition.Recognizer()
+
+        counter = 0
+        selekcija = ""
+        odrediste = ""
+
+        if choosed_color == WHITE_COLOR:
+            while (counter < 2):
+                try:
+                    with speech_recognition.Microphone(sample_rate=22050) as mic:
+
+                        recognizer.adjust_for_ambient_noise(mic, duration=0.6)
+                        recognizer.pause_threshold = 0.8  # default 0.8
+                        recognizer.non_speaking_duration = 0.25
+                        print("Pricaj")
+                        audio = recognizer.listen(mic)
+                        print("Obrada zvuka...")
+                        start = datetime.datetime.now()
+
+                        s = io.BytesIO(audio.get_wav_data())
+                        segment = AudioSegment.from_raw(s, sample_width=audio.sample_width, frame_rate=audio.sample_rate, channels=1)
+                        s.close()
+                        audio: AudioSegment = pojacaj(segment)
+
+                        words = silence.split_on_silence(audio, min_silence_len=150, silence_thresh=-16, keep_silence=400)
+
+                        if len(words) == 2:
+                            audio.export("soundControll/sample.wav")
+                            words[0].export("soundControll/slovo.wav")
+                            words[1].export("soundControll/broj.wav")
+
+                        else:
+                            count = 0
+                            # for audF in words:
+                            #     audF.export(count.__str__() + ".wav")
+                            #     count += 1
+                            print(len(words))
+                            raise Exception("Greska u obradi zvuka")
+
+                        # wave_plot()
+                        slovo: AudioSegment = words[0]
+                        cifra: AudioSegment = words[1]
+
+                        final_slovo = prepare_for_cnn_old_way("slovo.wav")
+                        final_cifra = prepare_for_cnn_old_way("broj.wav")
+
+                        slovo = predict_letter(final_slovo)
+                        broj = predict_number(final_cifra)
+
+                        if counter == 0:
+                            selekcija = slovo+broj
+                        if counter == 1:
+                            odrediste = slovo+broj
+                        
+                        counter += 1
+
+                        if counter == 2:
+                            board = move(selekcija+" "+odrediste)
+                            if board == []:
+                                counter = 0
+                                continue
+
+                            progress_callback.emit(board)
+                            Heuristic.write_player_move(board)
+                            idle_moves_counter += 1
+
+                except Exception as e:
+                    print(e)
+                    continue
+
+            counter = 0
+
         
         while (True):
             if(self.settings[2] == 0):
@@ -125,7 +194,70 @@ class Game(QMainWindow):
                 if (board.check_if_it_is_check(choosed_color)):
                     print("Check!\n")
                 pieces_remaining = count_pieces(board)
-                board = get_player_move(board)
+                
+                while (counter < 2):
+                    try:
+                        with speech_recognition.Microphone(sample_rate=22050) as mic:
+                            recognizer.adjust_for_ambient_noise(mic, duration=0.6)
+                            recognizer.pause_threshold = 0.8  # default 0.8
+                            recognizer.non_speaking_duration = 0.25
+                            print("Pricaj")
+                            audio = recognizer.listen(mic)
+                            print("Obrada zvuka...")
+                            start = datetime.datetime.now()
+
+                            s = io.BytesIO(audio.get_wav_data())
+                            segment = AudioSegment.from_raw(s, sample_width=audio.sample_width, frame_rate=audio.sample_rate, channels=1)
+                            s.close()
+                            audio: AudioSegment = pojacaj(segment)
+
+                            words = silence.split_on_silence(audio, min_silence_len=150, silence_thresh=-16, keep_silence=400)
+
+                            if len(words) == 2:
+                                audio.export("soundControll/sample.wav")
+                                words[0].export("soundControll/slovo.wav")
+                                words[1].export("soundControll/broj.wav")
+
+                            else:
+                                count = 0
+                                # for audF in words:
+                                #     audF.export(count.__str__() + ".wav")
+                                #     count += 1
+                                print(len(words))
+                                raise Exception("Greska u obradi zvuka")
+
+                            # wave_plot()
+                            slovo: AudioSegment = words[0]
+                            cifra: AudioSegment = words[1]
+
+                            final_slovo = prepare_for_cnn_old_way("slovo.wav")
+                            final_cifra = prepare_for_cnn_old_way("broj.wav")
+
+                            slovo = predict_letter(final_slovo)
+                            broj = predict_number(final_cifra)
+
+                            if counter == 0:
+                                selekcija = slovo+broj
+                            if counter == 1:
+                                odrediste = slovo+broj
+                            
+                            counter += 1
+
+                            if counter == 2:
+                                board = move(selekcija+" "+odrediste)
+                                if board == []:
+                                    counter = 0
+                                    continue
+
+                                progress_callback.emit(board)
+                                Heuristic.write_player_move(board)
+                                idle_moves_counter += 1
+                                
+                    except Exception as e:
+                        print(e)
+                        continue
+
+                counter = 0
 
                 if (pieces_remaining == count_pieces(board)):
                     idle_moves_counter += 1

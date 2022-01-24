@@ -232,6 +232,15 @@ def get_player_move(board):
         except:
             print("Move command is invalid, try again..\n")
 
+def move(next_move, board):
+    if (not check_if_format_is_valid(next_move)):
+        print("Command format is invalid, try again..\n")
+    else:
+        new_board_state = check_if_move_is_valid(next_move, board)
+        if (new_board_state == []):
+            print("That move is invalid, try again..\n")
+        else:
+            return new_board_state
 
 def print_player_move(next_move):
 

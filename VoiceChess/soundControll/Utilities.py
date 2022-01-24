@@ -13,7 +13,7 @@ from matplotlib import pyplot as plt
 from pydub import AudioSegment
 from sklearn import model_selection as skms
 
-from VoiceChess.soundControll.augmentations import pojacaj
+from soundControll.augmentations import pojacaj
 
 AUDIO_DATASET_PATH = 'C:\\Users\\LUKA\\Desktop\\ChessSoundDataset\\'
 folderi = ['1', '2', '3', '4', '5', '6', '7', '8', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
@@ -98,7 +98,8 @@ def dump_to_mel(file_name, import_path, dump_to_path):
     s = librosa.feature.melspectrogram(y=data, sr=sr)
     librosa.display.specshow(librosa.power_to_db(s, ref=np.max), x_axis='time', y_axis='mel', fmin=50, fmax=280)
 
-    mel_path = dump_to_path + '\\' + file_name[:-4] + '.jpg'
+    # mel_path = dump_to_path + '\\' + file_name[:-4] + '.jpg'
+    mel_path = dump_to_path + '/' + file_name[:-4] + '.jpg'
     plt.savefig(mel_path, dpi=500, bbox_inches='tight', pad_inches=0)
 
     plt.close()

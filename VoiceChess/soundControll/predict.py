@@ -1,22 +1,14 @@
-import cv2
-import keras
 import os
 
-import soundfile as sf
+import cv2
+import keras
 import librosa
-from pydub import AudioSegment
+import soundfile as sf
 
-from Utilities import dump_to_mel, img_size, mp3_to_wav
-from augmentations import pojacaj
+from soundControll.Utilities import dump_to_mel, img_size, mp3_to_wav
 
 klase_cifre = ['1', '2', '3', '4', '5', '6', '7', '8']
 klase_slova = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
-
-keti1  = "testData\\testKeti1.wav"
-luka1  = "testData\\testLuka1.wav"
-lukaA  = "testData\\testLukaA.wav"
-lukaA1 = "testData\\testLukaA1.wav"
-test   = "testData\\test.wav"
 
 def prepare_input_sound(file_path):
     export_path = "testData\\mels"
@@ -26,7 +18,7 @@ def prepare_input_sound(file_path):
 
     dump_to_mel("test.wav", file_path, export_path)
 
-    file_path = os.path.join(export_path,"test.jpg")
+    file_path = os.path.join(export_path, "test.jpg")
     print(file_path)
 
     img_arr = cv2.imread(file_path)
@@ -41,17 +33,16 @@ def prepare_input_sound(file_path):
 
 def load_model(model_type):
     if model_type == "c":
-        return keras.models.load_model("model_cifre.model")
+        return keras.models.load_model("soundControll/model_cifre.model")
     else:
-        return keras.models.load_model("model_slova.model")
+        return keras.models.load_model("soundControll/model_slova.model")
 
 def to_wav():
     mp3_to_wav("C:\\Users\\LUKA\\Desktop\\b1.mp3")
-    #mp3_to_wav("C:\\Users\\LUKA\\Desktop\\e.mp3")
 
 def predict():
     model = load_model("c")
-    prediction = model.predict([prepare_input_sound(test)])
+    prediction = model.predict([prepare_input_sound("VoiceChess/soundControll/testData/test.wav")])
 
     result = {}
 
@@ -95,12 +86,6 @@ def predict_letter(img):
 
     print("*\n*\n*\nWinner: ", max(result, key=result.get))
 
-
-def pitch_shift():
-
-    data, sr = librosa.load("testData\\test_og.wav")
-    data_aug = librosa.effects.pitch_shift(data, sr, 5)
-    sf.write("testData\\test.wav", data_aug, sr)
 
 if __name__ == "__main__":
     #to_wav()

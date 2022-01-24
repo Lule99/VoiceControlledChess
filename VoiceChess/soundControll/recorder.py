@@ -1,7 +1,6 @@
 import datetime
 import io
 import os
-import time
 
 import cv2
 import librosa.display
@@ -12,9 +11,9 @@ import speech_recognition
 from matplotlib import pyplot as plt
 from pydub import AudioSegment, silence
 from scipy.io.wavfile import write
-from Utilities import img_size, dump_to_mel
-from augmentations import pojacaj
-from predict import predict_letter, predict_number
+from soundControll.Utilities import img_size, dump_to_mel
+from soundControll.augmentations import pojacaj
+from soundControll.predict import predict_letter, predict_number
 
 
 class VoiceRecorder:
@@ -86,17 +85,16 @@ def my_record():
                 slovo:AudioSegment = words[0]
                 cifra:AudioSegment = words[1]
 
-                final_slovo = prepare_for_cnn(slovo)
-                final_cifra = prepare_for_cnn(cifra)
+                # final_slovo = prepare_for_cnn(slovo)
+                # final_cifra = prepare_for_cnn(cifra)
 
-                # final_slovo = prepare_for_cnn_old_way("slovo.wav")
-                # final_cifra = prepare_for_cnn_old_way("broj.wav")
+                final_slovo = prepare_for_cnn_old_way("slovo.wav")
+                final_cifra = prepare_for_cnn_old_way("broj.wav")
 
-                predict_letter(final_slovo)
-                predict_number(final_cifra)
+                slovo = predict_letter(final_slovo)
+                broj  = predict_number(final_cifra)
 
                 print("Vreme: ", datetime.datetime.now() - start)
-
 
 
                 if input("0 za dalje:") != "0":
@@ -138,17 +136,16 @@ def prepare_for_cnn(audio):
     img = cv2.resize(img, (img_size, img_size))
     img = img / 255.0
     final_img = img.reshape(-1, img_size, img_size, 3)
-    cv2.imwrite()
 
     return final_img
 
 def prepare_for_cnn_old_way(file_path):
-    export_path = "testData\\mels"
+    export_path = "soundControll/testData/mels"
 
-    if "testData" not in os.listdir():
-        os.makedirs(export_path)
+    # if "testData" not in os.listdir():
+    #     os.makedirs(export_path)
 
-    dump_to_mel("test_"+file_path, file_path, export_path)
+    dump_to_mel("test_"+file_path, "soundControll/"+file_path, export_path)
 
     file_path = os.path.join(export_path, "test_"+file_path[:-4]+".jpg")
 
