@@ -14,7 +14,7 @@ def run(to_load, useCuda):
     model.summary()
     model.compile(loss="sparse_categorical_crossentropy", optimizer='adam', metrics=['accuracy'])
     # model.fit(X, y, batch_size=64, epochs=10, validation_split=0.15, callbacks=[tensorboard])      mapiranje na logs za prikaz
-    model.fit(X, y, batch_size=16, epochs=5, validation_split=0.15)
+    model.fit(X, y, batch_size=16, epochs=3, validation_split=0.15)
 
     print("Model successfully trained!")
     print("Running tests...")

@@ -1,4 +1,7 @@
+import datetime
 import io
+import os
+import time
 
 import cv2
 import librosa.display
@@ -9,9 +12,9 @@ import speech_recognition
 from matplotlib import pyplot as plt
 from pydub import AudioSegment, silence
 from scipy.io.wavfile import write
-from Utilities import img_size
+from Utilities import img_size, dump_to_mel
 from augmentations import pojacaj
-from predict import predict_num, predict_letter
+from predict import predict_letter, predict_number
 
 
 class VoiceRecorder:
@@ -49,9 +52,14 @@ def my_record():
         try:
             with speech_recognition.Microphone(sample_rate=22050) as mic:
 
-                recognizer.adjust_for_ambient_noise(mic, duration=0.01)
+                recognizer.adjust_for_ambient_noise(mic, duration=0.6)
+                recognizer.pause_threshold = 0.8        #default 0.8
+                recognizer.non_speaking_duration = 0.25
                 print("Pricaj")
                 audio = recognizer.listen(mic)
+                print("Obrada zvuka...")
+                start = datetime.datetime.now()
+
 
 
                 s = io.BytesIO(audio.get_wav_data())
@@ -59,7 +67,7 @@ def my_record():
                 s.close()
                 audio: AudioSegment = pojacaj(segment)
 
-                words = silence.split_on_silence(audio, min_silence_len=100, silence_thresh=-16)
+                words = silence.split_on_silence(audio, min_silence_len=150, silence_thresh=-16, keep_silence=400)
 
                 if len(words) == 2:
                     audio.export("sample.wav")
@@ -67,42 +75,27 @@ def my_record():
                     words[1].export("broj.wav")
 
                 else:
-                    print("Greska u obradi zvuka")
-                    break
+                    count = 0
+                    for audF in words:
+                        audF.export(count.__str__()+".wav")
+                        count+=1
+                    print(len(words))
+                    raise Exception("Greska u obradi zvuka")
 
                 #wave_plot()
                 slovo:AudioSegment = words[0]
                 cifra:AudioSegment = words[1]
 
-                #konvert za librosu
-                data = np.array(slovo.get_array_of_samples()) .astype(np.float32)
-                sr = 22050
+                final_slovo = prepare_for_cnn(slovo)
+                final_cifra = prepare_for_cnn(cifra)
 
-                fig = plt.figure(figsize=[1, 1], dpi=500)
-                ax = fig.add_subplot(111)
-                ax.axes.get_xaxis().set_visible(False)
-                ax.axes.get_yaxis().set_visible(False)
-                ax.set_frame_on(False)
+                # final_slovo = prepare_for_cnn_old_way("slovo.wav")
+                # final_cifra = prepare_for_cnn_old_way("broj.wav")
 
-                s = librosa.feature.melspectrogram(y=data, sr=sr)
-                librosa.display.specshow(librosa.power_to_db(s, ref=np.max),
-                                         x_axis='time', y_axis='mel', fmin=50,fmax=280)
+                predict_letter(final_slovo)
+                predict_number(final_cifra)
 
-                figure: matplotlib.figure.Figure = plt.gcf()
-                figure.set_dpi(500)
-                plt.savefig("mel", dpi=500)
-                figure.canvas.draw()
-
-                b = figure.axes[0].get_window_extent()
-                img = np.array(figure.canvas.buffer_rgba())
-                img = img[int(b.y0):int(b.y1), int(b.x0):int(b.x1), :]
-                plt.close("all")
-                img = cv2.cvtColor(img, cv2.COLOR_RGBA2BGR)
-                img = cv2.resize(img, (img_size, img_size))
-                img = img/255.0
-                final_img = img.reshape(-1, img_size, img_size, 3)
-
-                predict_letter(final_img)
+                print("Vreme: ", datetime.datetime.now() - start)
 
 
 
@@ -113,8 +106,59 @@ def my_record():
 
 
         except Exception as e:
-            print("greska")
             print(e)
+            continue
+
+
+def prepare_for_cnn(audio):
+    # konvert za librosu
+    data = np.array(audio.get_array_of_samples()).astype(np.float32)
+    sr = 22050
+
+    fig = plt.figure(figsize=[1, 1], dpi=500)
+    ax = fig.add_subplot(111)
+    ax.axes.get_xaxis().set_visible(False)
+    ax.axes.get_yaxis().set_visible(False)
+    ax.set_frame_on(False)
+
+    s = librosa.feature.melspectrogram(y=data, sr=sr)
+    librosa.display.specshow(librosa.power_to_db(s, ref=np.max),
+                             x_axis='time', y_axis='mel', fmin=50, fmax=280)
+
+    figure: matplotlib.figure.Figure = plt.gcf()
+    figure.set_dpi(500)
+    # plt.savefig("mel", dpi=500)
+    figure.canvas.draw()
+
+    b = figure.axes[0].get_window_extent()
+    img = np.array(figure.canvas.buffer_rgba())
+    img = img[int(b.y0):int(b.y1), int(b.x0):int(b.x1), :]
+    plt.close()
+    img = cv2.cvtColor(img, cv2.COLOR_RGBA2BGR)
+    img = cv2.resize(img, (img_size, img_size))
+    img = img / 255.0
+    final_img = img.reshape(-1, img_size, img_size, 3)
+    cv2.imwrite()
+
+    return final_img
+
+def prepare_for_cnn_old_way(file_path):
+    export_path = "testData\\mels"
+
+    if "testData" not in os.listdir():
+        os.makedirs(export_path)
+
+    dump_to_mel("test_"+file_path, file_path, export_path)
+
+    file_path = os.path.join(export_path, "test_"+file_path[:-4]+".jpg")
+
+    img_arr = cv2.imread(file_path)
+    img_arr = cv2.cvtColor(img_arr, cv2.COLOR_BGR2RGB)
+    img_arr = cv2.resize(img_arr, (img_size, img_size))
+    img_arr = img_arr / 255.0
+
+    return img_arr.reshape(-1, img_size, img_size, 3)
+
 
 
 def wave_plot():

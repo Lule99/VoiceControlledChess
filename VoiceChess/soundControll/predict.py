@@ -2,6 +2,8 @@ import cv2
 import keras
 import os
 
+import soundfile as sf
+import librosa
 from pydub import AudioSegment
 
 from Utilities import dump_to_mel, img_size, mp3_to_wav
@@ -63,7 +65,7 @@ def predict():
     print("*\n*\n*\nWinner: ", max(result, key=result.get))
 
 
-def predict_num(img):
+def predict_number(img):
     model = load_model("c")
     prediction = model.predict(img)
 
@@ -94,6 +96,13 @@ def predict_letter(img):
     print("*\n*\n*\nWinner: ", max(result, key=result.get))
 
 
+def pitch_shift():
+
+    data, sr = librosa.load("testData\\test_og.wav")
+    data_aug = librosa.effects.pitch_shift(data, sr, 5)
+    sf.write("testData\\test.wav", data_aug, sr)
+
 if __name__ == "__main__":
     #to_wav()
+    #pitch_shift()
     predict()

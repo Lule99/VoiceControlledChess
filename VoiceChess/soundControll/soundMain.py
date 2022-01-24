@@ -24,11 +24,11 @@ def main():
     # end = datetime.now()
     # print("----------------------------------------------------\nKraj: ", end)
     # print("*\n*\n*\n*** Trajanje: ", end - begin)
-    # begin = datetime.now()
-    # print("\nTRENING\n")
-    # model.run("cifre", True)
-    # end = datetime.now()
-    # print("*\n*\n*\n*** Trajanje: ", end - begin)
+    begin = datetime.now()
+    print("\nTRENING\n")
+    model.run("cifre", True)
+    end = datetime.now()
+    print("*\n*\n*\n*** Trajanje: ", end - begin)
     pass
 
 
