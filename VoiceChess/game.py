@@ -5,7 +5,8 @@ from board_view import BoardView
 from my_threads import Worker
 from recording import VoiceRecorder
 from computerLogic import *
-from mcts import *
+from algorithm2 import *
+from keras.models import load_model
 
 
 class Game(QMainWindow):
@@ -72,24 +73,24 @@ class Game(QMainWindow):
             Heuristic.write_player_move(board)
             idle_moves_counter += 1
 
+        model = load_model('model.h5')
+        
         while (True):
             if(self.settings[2] == 0):
                 pieces_remaining = count_pieces(board)
                 if (check_if_only_pawns_remaining(board)):
-                    # ovde ces pozvati montecarlo ili minimax
                     board = Heuristic.get_computer_move(
                         board, choosed_level + 2)
                 else:
-                    # ovde ces pozvati montecarlo ili minimax
                     board = Heuristic.get_computer_move(board, choosed_level)
             else:
                 pieces_remaining = count_pieces(board)
                 if (choosed_color == WHITE_COLOR):
-                    board = MCTS.mcts_pred(
-                        Node(board), BLACK_COLOR)
+                    board = Algorithm2.simulation(
+                        Node(board), model, BLACK_COLOR)
                 else:
-                    board = MCTS.mcts_pred(
-                        Node(board), WHITE_COLOR)
+                    board = Algorithm2.simulation(
+                        Node(board), model, WHITE_COLOR)
 
             if (Heuristic.check_if_it_is_tie()):
                 print("Game ended tie because of third repeat of some situation..")
