@@ -115,7 +115,7 @@ def dump_to_mel(file_name, import_path, dump_to_path):
     :param dump_to_path: folder gde ce se cuvati izlazni mel spectogram
     :return:
     """
-    data, sr = librosa.load(import_path)
+    data, sr = librosa.load("soundControll/"+import_path)
 
     fig = plt.figure(figsize=[1, 1])
     ax = fig.add_subplot(111)

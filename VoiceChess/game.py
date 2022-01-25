@@ -7,6 +7,7 @@ from algorithm2 import *
 from board_view import BoardView
 from my_threads import Worker
 from soundControll.recorder import *
+import tensorflow as tf
 from sound import Sound
 
 
@@ -15,7 +16,6 @@ class Game(QMainWindow):
         QMainWindow.__init__(self)
         self.settings = settings
         self.board = BoardView(settings)
-        self.try_again = Sound("./try_again.wav")
 
         self._init_ui()
 
@@ -62,6 +62,8 @@ class Game(QMainWindow):
         selekcija = ""
         odrediste = ""
 
+        tf.compat.v1.disable_eager_execution()
+
         if choosed_color == WHITE_COLOR:
             while (counter < 2):
                 try:
@@ -70,8 +72,8 @@ class Game(QMainWindow):
                         recognizer.adjust_for_ambient_noise(mic, duration=0.6)
                         recognizer.pause_threshold = 0.8  # default 0.8
                         recognizer.non_speaking_duration = 0.25
-                        print("Pricaj")
-                        audio = recognizer.listen(mic)
+                        print("Odredi polje[Izgovor Slovo_Cifra]:")
+                        audio = recognizer.listen(mic, phrase_time_limit=7)
                         print("Obrada zvuka...")
                         start = datetime.datetime.now()
 
@@ -80,7 +82,7 @@ class Game(QMainWindow):
                         s.close()
                         audio: AudioSegment = pojacaj(segment)
 
-                        words = silence.split_on_silence(audio, min_silence_len=150, silence_thresh=-16, keep_silence=400)
+                        words = silence.split_on_silence(audio, min_silence_len=100, silence_thresh=-16, keep_silence=400)
 
                         if len(words) == 2:
                             audio.export("soundControll/sample.wav")
@@ -92,7 +94,7 @@ class Game(QMainWindow):
                             # for audF in words:
                             #     audF.export(count.__str__() + ".wav")
                             #     count += 1
-                            print(len(words))
+                            print("Broj izdvojenih reci: ", len(words))
                             raise Exception("Greska u obradi zvuka")
 
                         # wave_plot()
@@ -126,7 +128,6 @@ class Game(QMainWindow):
                             idle_moves_counter += 1
 
                 except Exception as e:
-                    self.try_again.play()
                     print(e)
                     continue
 
@@ -207,9 +208,10 @@ class Game(QMainWindow):
                             recognizer.adjust_for_ambient_noise(mic, duration=0.6)
                             recognizer.pause_threshold = 0.8  # default 0.8
                             recognizer.non_speaking_duration = 0.25
-                            input("Nastavi:\n>>")
-                            print("Pricaj")
-                            audio = recognizer.listen(mic)
+                            if counter == 0:
+                                input("Nastavi:\n>>")
+                            print("Odredi polje[Izgovor Slovo_Cifra]:")
+                            audio = recognizer.listen(mic, phrase_time_limit=7)
                             print("Obrada zvuka...")
                             start = datetime.datetime.now()
 
@@ -230,7 +232,7 @@ class Game(QMainWindow):
                                 # for audF in words:
                                 #     audF.export(count.__str__() + ".wav")
                                 #     count += 1
-                                print(len(words))
+                                print("Broj izdvojenih reci: ", len(words))
                                 raise Exception("Greska u obradi zvuka")
 
                             # wave_plot()

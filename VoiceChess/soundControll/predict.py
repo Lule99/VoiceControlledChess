@@ -43,11 +43,11 @@ def load_model(model_type):
     :return:
     """
     if model_type == "c":
-        # return keras.models.load_model("soundControll/model_cifre.model")
-        return keras.models.load_model("model_cifre.model")
+        return keras.models.load_model("soundControll/model_cifre.model")
+        # return keras.models.load_model("model_cifre.model")
     else:
-        # return keras.models.load_model("soundControll/model_slova.model")
-        return keras.models.load_model("model_slova.model")
+        return keras.models.load_model("soundControll/model_slova.model")
+        # return keras.models.load_model("model_slova.model")
 
 
 def predict():
@@ -63,7 +63,7 @@ def predict():
     for cls in klase_cifre:
         result[cls] = prediction[0][klase_cifre.index(cls)] * 100
 
-    print(prediction)
+    #print(prediction)
     print(30 * "*")
     print(result)
 
@@ -84,7 +84,7 @@ def predict_number(img):
     for cls in klase_cifre:
         result[cls] = prediction[0][klase_cifre.index(cls)] * 100
 
-    print(prediction)
+    #print(prediction)
     print(30 * "*")
     print(result)
 

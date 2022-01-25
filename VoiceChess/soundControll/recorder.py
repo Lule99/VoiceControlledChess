@@ -2,6 +2,7 @@ import datetime
 import io
 import os
 
+import tensorflow as tf
 import cv2
 import librosa.display
 import matplotlib.figure
@@ -23,6 +24,8 @@ def my_record():
     """
     recognizer = speech_recognition.Recognizer()
 
+    tf.compat.v1.disable_eager_execution()
+
     while True:
         try:
             with speech_recognition.Microphone(sample_rate=22050) as mic:
@@ -31,7 +34,8 @@ def my_record():
                 recognizer.pause_threshold = 0.8  # default 0.8
                 recognizer.non_speaking_duration = 0.25
                 print("Pricaj")
-                audio: AudioData = recognizer.listen(mic)
+                t = datetime.datetime.now()
+                audio: AudioData = recognizer.listen(mic, phrase_time_limit=10)           # timeout=15, phrase_time_limit=3.5 ne vredi ako je dynamic_energy_threshold, jer sve tretira kao input...
                 print("Obrada zvuka...")
                 start = datetime.datetime.now()
 
@@ -41,7 +45,8 @@ def my_record():
                 s.close()
                 audio: AudioSegment = pojacaj(segment)
 
-                words = silence.split_on_silence(audio, min_silence_len=150, silence_thresh=-16, keep_silence=400)
+                # words = silence.split_on_silence(audio, min_silence_len=150, silence_thresh=-16, keep_silence=400)
+                words = silence.split_on_silence(audio, min_silence_len=100, silence_thresh=-16, keep_silence=400)
 
                 if len(words) == 2:
                     audio.export("sample.wav")
@@ -52,9 +57,10 @@ def my_record():
                     count = 0
                     # Izvoz lose separatisanih reci:
                     for audF in words:
-                        # audF.export(count.__str__()+".wav")
+                        audF.export(count.__str__()+".wav")
                         count += 1
                     print("Broj izdvojanih reci: ", len(words))
+                    print("time: ", datetime.datetime.now()-t)
                     raise Exception("Greska u obradi zvuka")
 
                 # Za koristenje prepare_for_cnn() direktno bez snimanja na disk:
@@ -132,8 +138,8 @@ def prepare_for_cnn_old_way(file_path):
     """
     export_path = "testData/mels"
 
-    # if "testData" not in os.listdir():
-    #     os.makedirs(export_path)
+    if "testData" not in os.listdir():
+        os.makedirs(export_path)
 
     dump_to_mel("test_" + file_path, "" + file_path, export_path)
 
