@@ -13,11 +13,21 @@ from matplotlib import pyplot as plt
 from pydub import AudioSegment
 from sklearn import model_selection as skms
 
-from soundControll.augmentations import pojacaj
+from VoiceChess.soundControll.augmentations import pojacaj
 
+"""
+*   Podaci i putanja potrebni koristeni za procesiranje, augmentaciju i pripremu za i treniranje modela...
+"""
+# putanja do originalnih audio snimaka
 AUDIO_DATASET_PATH = 'C:\\Users\\LUKA\\Desktop\\ChessSoundDataset\\'
-folderi = ['1', '2', '3', '4', '5', '6', '7', '8', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
+
+# nazivi foldera originalnim audio sa uzorcima
 users = ['Luka', 'Njegos', 'Keti', 'Jovana', 'Djordje', 'Basic', 'Nikola']
+
+# struktura datoteke sa snimljenim audio fajlovima
+folderi = ['1', '2', '3', '4', '5', '6', '7', '8', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
+
+# korisnici sa slabim intenzitetom audio fajlova, potrebno pojacati 30db [Augmentations.pojacaj()]
 pojacajUsers = ['Luka', 'Nikola', 'Keti', 'Jovana']
 
 # ~~~Klase
@@ -25,20 +35,26 @@ cifre = folderi[:8]
 slova = folderi[8:]
 
 # ~~~Data
-img_size = 128  # 94
+img_size = 128  # Svaki mel_spectogram bice skaliran na 128x128
 traning_data = []
 
 
-# users = ['Nikola']
-
 def mp3_to_wav(path):
+    """
+    Originalni audio snimci u mp3 formatu, potrebno konvertovati u wav..
+    :param path:
+    :return:
+    """
     wav_file = AudioSegment.from_mp3(path)
     wav_file = pojacaj(wav_file)
-    wav_file.export(path[:-4]+".wav")
-
+    wav_file.export(path[:-4] + ".wav")
 
 
 def report():
+    """
+    Uvid u dataset nakon obrade podataka (balansiranost, broj uzoraka i sl...)
+    :return:
+    """
     dataset = {}
     for folder in folderi:
         count = len(os.listdir(get_mel_target_path(folder)))
@@ -65,6 +81,10 @@ def report():
 
 
 def randomize_name():
+    """
+    Svaki audiofajl dobija nasumicno ime
+    :return:
+    """
     return ''.join(random.choices(string.ascii_letters + string.digits, k=16))
 
 
@@ -87,6 +107,14 @@ def get_mel_target_path(folder_name):
 
 
 def dump_to_mel(file_name, import_path, dump_to_path):
+    """
+    Funkcija ulazni audio fajl transformise u mel spektogram...
+
+    :param file_name:    naziv fajla koji se obradjuje
+    :param import_path:  putanja na kojoj se nalazi ulazni audio fajl
+    :param dump_to_path: folder gde ce se cuvati izlazni mel spectogram
+    :return:
+    """
     data, sr = librosa.load(import_path)
 
     fig = plt.figure(figsize=[1, 1])
@@ -106,6 +134,11 @@ def dump_to_mel(file_name, import_path, dump_to_path):
 
 
 def plot_time_series(data):
+    """
+    Uvid u snimljeni audio [ frekvencija/amplituda ]
+    :param data:
+    :return:
+    """
     plt.figure(figsize=(14, 8))
     plt.title('Raw wave ')
     plt.ylabel('Amplitude')
@@ -115,13 +148,18 @@ def plot_time_series(data):
 
 # ~~~~~~~~~~~~~~~~~~MODEL~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-"""
-:param "folderi" za sve, "cifre"-0-9, "slova"-A-H
-"""
-
 
 def process_mels(mel_type_iterable):
-    print("Making traning data...")
+    """
+    1.  Svaki mel spektogram iz odgovarajuce klase se ucitava u BGR formatu (zbog OpenCv)
+    2.  Vrsi se resize na Utilities.img_size, trenutno 128px maximalna memorija hardware-a
+    3.  Normalizacija
+    4.  Dodavanje u Utilities.traning_data - koji ce kasnije biti izmesan i podeljen na trening, test i validacioni skup...
+
+    :param mel_type_iterable: Utilities.slova ili Utilities.cifre, da bi odvojeno tekla obrada podataka za cnn za slova i cnn za brojeve...
+    :return:
+    """
+    print("Pravljenje trening podataka...")
 
     broken_mels = 0
     for cls in mel_type_iterable:
@@ -134,8 +172,6 @@ def process_mels(mel_type_iterable):
                 # plt.imshow(img_arr)
                 # plt.show()
                 img_arr = cv2.resize(img_arr, (img_size, img_size))
-                # plt.imshow(img_arr, cmap='gray')
-                # plt.show()
                 img_arr = img_arr / 255.0
                 # plt.imshow(img_arr)
                 # plt.show()
@@ -147,12 +183,18 @@ def process_mels(mel_type_iterable):
     if broken_mels > 0:
         print("Neuspešno učitani mel-ovi: ", broken_mels)
 
-    if(mel_type_iterable == cifre):
+    if (mel_type_iterable == cifre):
         save_np_data(make_numpy_arr(), "cifre")
     else:
         save_np_data(make_numpy_arr(), "slova")
 
+
 def make_numpy_arr():
+    """
+    Po obradi mel_spec [vidi Utilities.process_mels()], trening podaci se nasumicni mesaju i dodaju u X[], a odgovarajuce labele u Y[]
+    Reshape za prilagodjavanje ulaza u keras... tri kanala, slika u boji...
+    :return:
+    """
     print("Velicina trening seta: ", len(traning_data))
     # promesaj trening set...
     random.shuffle(traning_data)
@@ -170,17 +212,20 @@ def make_numpy_arr():
 
     return X, y
 
-"""
-:param tupl X,y podaci iz make_numpy_arr()
-:param to_save cifre ili slova
-"""
+
 def save_np_data(tuple, to_save):
+    """
+    Izvoz pripremnjelni trening podataka iz [ Utilities.make_numpy_arr() ]
+    :param tuple:  X,y podaci iz make_numpy_arr()
+    :param to_save: cifre ili slova
+    :return:
+    """
     if not (to_save == "cifre" or to_save == "slova"):
         raise Exception("Los parametar za save!\n\t \"cifre/slova\" only")
 
     print("Saving ...")
-    x_path = "X"+to_save+".pickle"
-    y_path = "y"+to_save+".pickle"
+    x_path = "X" + to_save + ".pickle"
+    y_path = "y" + to_save + ".pickle"
     x, y = tuple
     out = open(x_path, "wb")
     pickle.dump(x, out, protocol=4)
@@ -191,20 +236,20 @@ def save_np_data(tuple, to_save):
     print("Data saved")
 
 
-"""
-:param "cifre" / "slova"
-"""
-
-
 def load_np_data(to_load):
-    if not (to_load == "cifre" or to_load == "slova"):
-        raise Exception("Los parametar za ucitavanje!\n\t \"cifre/slova\" only")
+    """
 
-    x_path = "X"+to_load+".pickle"
-    y_path = "y"+to_load+".pickle"
+    :param to_load: cifre/slova , vidi Utilities.save_np_data()
+    :return:
+    """
+    if not (to_load == "cifre" or to_load == "slova"):
+        raise Exception("Los parametar za ucitavanje!\n\t \"cifre\"/\"slova\"")
+
+    x_path = "X" + to_load + ".pickle"
+    y_path = "y" + to_load + ".pickle"
 
     if x_path not in os.listdir() or y_path not in os.listdir():
-        print(20*"~", "\nObradjeni trening podaci ne postoje! Sledi procesiranje podataka...\n", 20*"~")
+        print(20 * "~", "\nObradjeni trening podaci ne postoje! Sledi procesiranje podataka...\n", 20 * "~")
         if to_load == "cifre":
             process_mels(cifre)
         else:
@@ -222,20 +267,24 @@ def load_np_data(to_load):
     return x_res, y_res
 
 
-"""
-:param "cifre" / "slova"
-"""
-
-
 def load(to_load):
+    """
+
+    :param to_load: "cifre" / "slova"
+    :return:
+    """
     X, y = load_np_data(to_load)
     X, X_test, y, y_test = skms.train_test_split(X, y, test_size=0.1, random_state=42)
 
     return X, X_test, y, y_test
 
 
-####GPU Check and detalies####
 def gpu_check_CUDA(useCuda):
+    """
+    Aktivacija CUDA za brze treniranje
+    :param useCuda: boolean T/F
+    :return:
+    """
     if useCuda:
         physical_devices = tf.config.experimental.list_physical_devices('GPU')
         print("Broj detektovanih GPU: ", len(physical_devices))

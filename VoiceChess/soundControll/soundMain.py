@@ -8,22 +8,26 @@ from augmentations import *
 
 
 def main():
+    """
+    Modul iz kog se pokrece procesiranje i augmentacija audio podataka i treniranje mreze...
+    :return:
+    """
 
-    # begin = datetime.now()
-    # print("----------------------------------------------------\nPocetak: ", begin)
-    # to_wav()
-    # augment()
-    # to_mel()
-    # report()
-    # end = datetime.now()
-    # print("----------------------------------------------------\nKraj: ", end)
-    # print("*\n*\n*\n*** Trajanje: ", end - begin)
-    # print("\nTRENING\n")
-    # begin = datetime.now()
-    # model.run("slova", False)
-    # end = datetime.now()
-    # print("----------------------------------------------------\nKraj: ", end)
-    # print("*\n*\n*\n*** Trajanje: ", end - begin)
+    begin = datetime.now()
+    print("----------------------------------------------------\nPocetak: ", begin)
+    to_wav()
+    augment()
+    to_mel()
+    report()
+    end = datetime.now()
+    print("----------------------------------------------------\nKraj: ", end)
+    print("*\n*\n*\n*** Trajanje: ", end - begin)
+    print("\nTRENING\n")
+    begin = datetime.now()
+    model.run("slova", False)
+    end = datetime.now()
+    print("----------------------------------------------------\nKraj: ", end)
+    print("*\n*\n*\n*** Trajanje: ", end - begin)
     begin = datetime.now()
     print("\nTRENING\n")
     model.run("cifre", True)
@@ -33,6 +37,10 @@ def main():
 
 
 def to_wav():
+    """
+    Originalni .mp3 snimak --> .wav
+    :return:
+    """
     for user in users:
         make_export_folder_if_not_exists(user)
         print("Folder: " + user)
@@ -50,23 +58,14 @@ def to_wav():
                 wav_file.export(export_dest)
 
 
-def to_mel():
-    print('Generisanje mel spektrograma:\n')
-
-    make_mel_export_folder()
-
-    for user in users:
-        print("Folder: " + user)
-        for folder in folderi:
-            print('\t\tObrada: ' + folder)
-            current_wav_folder = AUDIO_DATASET_PATH + 'GEN_WAV_' + user + "\\" + folder
-            dump_to_path = get_mel_target_path(folder)
-            for wav_file in os.listdir(current_wav_folder):
-                wav_path = current_wav_folder + "\\" + wav_file
-                dump_to_mel(wav_file, wav_path, dump_to_path)
-
-
 def augment():
+    """
+    Augmentacija originalnog dataseta sa po 10 generisanih fajlova:
+        1-3:    Dodavanje pozadinskog suma razlicitog intenziteta
+        4-7:    Promena visine tona u rasponu [-2.5 : 2.5]
+        8-10:   Promena brzine u rasponu [0.75 : 1.75]
+    :return:
+    """
     print('Augmentacija:\n')
 
     for user in users:
@@ -87,6 +86,26 @@ def augment():
                 speed_augment(data, sr, 0.75, wav_path)
                 speed_augment(data, sr, 1.5, wav_path)
                 speed_augment(data, sr, 1.75, wav_path)
+
+
+def to_mel():
+    """
+    Obrada svih originalnih i generisanih .wav --> mel_spectogram [.jpg]
+    :return:
+    """
+    print('Generisanje mel spektrograma:\n')
+
+    make_mel_export_folder()
+
+    for user in users:
+        print("Folder: " + user)
+        for folder in folderi:
+            print('\t\tObrada: ' + folder)
+            current_wav_folder = AUDIO_DATASET_PATH + 'GEN_WAV_' + user + "\\" + folder
+            dump_to_path = get_mel_target_path(folder)
+            for wav_file in os.listdir(current_wav_folder):
+                wav_path = current_wav_folder + "\\" + wav_file
+                dump_to_mel(wav_file, wav_path, dump_to_path)
 
 
 if __name__ == "__main__":

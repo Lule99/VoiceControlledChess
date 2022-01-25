@@ -6,63 +6,38 @@ import cv2
 import librosa.display
 import matplotlib.figure
 import numpy as np
-import sounddevice
 import speech_recognition
 from matplotlib import pyplot as plt
 from pydub import AudioSegment, silence
-from scipy.io.wavfile import write
-from soundControll.Utilities import img_size, dump_to_mel
-from soundControll.augmentations import pojacaj
-from soundControll.predict import predict_letter, predict_number
-
-
-class VoiceRecorder:
-    def __init__(self, seconds: int = 3,
-                 samplerate: int = 22050,
-                 channels: int = 2) -> None:
-        self.seconds = seconds
-        self.samplerate = samplerate
-        self.channels = channels
-
-    def recording(self):
-        bla = input("Zapocni snimanje[press any key]...")
-        record_voice = sounddevice.rec(
-            int(self.seconds * self.samplerate), samplerate=self.samplerate, channels=self.channels)
-        print("Recording started:")
-        sounddevice.wait()
-        return record_voice
-
-    def save(self, record_voice, path: str = "out.wav") -> None:
-        write(path, self.samplerate, record_voice)
-
-
-def main():
-    rec = VoiceRecorder()
-    rec.save(rec.recording())
-
+from speech_recognition import AudioData
+from VoiceChess.soundControll.Utilities import img_size, dump_to_mel
+from VoiceChess.soundControll.augmentations import pojacaj
+from VoiceChess.soundControll.predict import predict_letter, predict_number
 
 
 def my_record():
-
+    """
+    Snima i prepoznaje ulazni zvuk.
+    Telo ove funkcije ugradjeno je i predstavlja glavnu petlju game.py
+    :return:
+    """
     recognizer = speech_recognition.Recognizer()
-
 
     while True:
         try:
             with speech_recognition.Microphone(sample_rate=22050) as mic:
 
                 recognizer.adjust_for_ambient_noise(mic, duration=0.6)
-                recognizer.pause_threshold = 0.8        #default 0.8
+                recognizer.pause_threshold = 0.8  # default 0.8
                 recognizer.non_speaking_duration = 0.25
                 print("Pricaj")
-                audio = recognizer.listen(mic)
+                audio: AudioData = recognizer.listen(mic)
                 print("Obrada zvuka...")
                 start = datetime.datetime.now()
 
-
-
                 s = io.BytesIO(audio.get_wav_data())
-                segment = AudioSegment.from_raw(s,  sample_width=audio.sample_width, frame_rate=audio.sample_rate, channels=1)
+                segment = AudioSegment.from_raw(s, sample_width=audio.sample_width, frame_rate=audio.sample_rate,
+                                                channels=1)
                 s.close()
                 audio: AudioSegment = pojacaj(segment)
 
@@ -75,33 +50,34 @@ def my_record():
 
                 else:
                     count = 0
+                    # Izvoz lose separatisanih reci:
                     for audF in words:
-                        #audF.export(count.__str__()+".wav")
-                        count+=1
-                    print(len(words))
+                        # audF.export(count.__str__()+".wav")
+                        count += 1
+                    print("Broj izdvojanih reci: ", len(words))
                     raise Exception("Greska u obradi zvuka")
 
-                #wave_plot()
-                slovo:AudioSegment = words[0]
-                cifra:AudioSegment = words[1]
+                # Za koristenje prepare_for_cnn() direktno bez snimanja na disk:
+
+                # slovo: AudioSegment = words[0]
+                # cifra: AudioSegment = words[1]
 
                 # final_slovo = prepare_for_cnn(slovo)
                 # final_cifra = prepare_for_cnn(cifra)
+
+                # Sa snimanjem na disk:
 
                 final_slovo = prepare_for_cnn_old_way("slovo.wav")
                 final_cifra = prepare_for_cnn_old_way("broj.wav")
 
                 slovo = predict_letter(final_slovo)
-                broj  = predict_number(final_cifra)
+                broj = predict_number(final_cifra)
 
                 print("Vreme: ", datetime.datetime.now() - start)
+                print("Predikcija: ", slovo + broj)
 
-
-                if input("0 za dalje:") != "0":
+                if input("0 za dalje:\n>>") != "0":
                     break
-
-
-
 
         except Exception as e:
             print(e)
@@ -109,6 +85,13 @@ def my_record():
 
 
 def prepare_for_cnn(audio):
+    """
+    Procesiranje ulaznog audio fajla za ulaz u CNN. Bez cuvanja audia, spectograma itd na disk...
+    Ulaz --> model direktno.
+
+    :param audio: .wav file
+    :return:
+    """
     # konvert za librosu
     data = np.array(audio.get_array_of_samples()).astype(np.float32)
     sr = 22050
@@ -139,15 +122,22 @@ def prepare_for_cnn(audio):
 
     return final_img
 
+
 def prepare_for_cnn_old_way(file_path):
-    export_path = "soundControll/testData/mels"
+    """
+    Procesiranje ulaznog audio fajla za ulaz u CNN.
+
+    :param file_path:  .wav file putanja
+    :return:
+    """
+    export_path = "testData/mels"
 
     # if "testData" not in os.listdir():
     #     os.makedirs(export_path)
 
-    dump_to_mel("test_"+file_path, "soundControll/"+file_path, export_path)
+    dump_to_mel("test_" + file_path, "" + file_path, export_path)
 
-    file_path = os.path.join(export_path, "test_"+file_path[:-4]+".jpg")
+    file_path = os.path.join(export_path, "test_" + file_path[:-4] + ".jpg")
 
     img_arr = cv2.imread(file_path)
     img_arr = cv2.cvtColor(img_arr, cv2.COLOR_BGR2RGB)
@@ -157,29 +147,35 @@ def prepare_for_cnn_old_way(file_path):
     return img_arr.reshape(-1, img_size, img_size, 3)
 
 
-
 def wave_plot():
+    """
+    Interna funkcija. Ne koristi se u produkciji.
+    Koristeno za uvid u grafik snimljenog i segmentiranog snimka.
+
+    :return:
+    """
     data, sr = librosa.load(
         "C:\\Users\\LUKA\\PycharmProjects\\VoiceControlledChess\\VoiceChess\\soundControll\\sample.wav")
-    fig = plt.figure(figsize=[10, 5])
+    plt.figure(figsize=[10, 5])
     librosa.display.waveplot(data, sr=sr)
     plt.xlabel("Vreme[s]")
     plt.ylabel("Amplituda")
     plt.show()
     data, sr = librosa.load(
         "C:\\Users\\LUKA\\PycharmProjects\\VoiceControlledChess\\VoiceChess\\soundControll\\slovo.wav")
-    fig = plt.figure(figsize=[10, 5])
+    plt.figure(figsize=[10, 5])
     librosa.display.waveplot(data, sr=sr)
     plt.xlabel("Vreme[s]")
     plt.ylabel("Amplituda")
     plt.show()
     data, sr = librosa.load(
         "C:\\Users\\LUKA\\PycharmProjects\\VoiceControlledChess\\VoiceChess\\soundControll\\broj.wav")
-    fig = plt.figure(figsize=[10, 5])
+    plt.figure(figsize=[10, 5])
     librosa.display.waveplot(data, sr=sr)
     plt.xlabel("Vreme[s]")
     plt.ylabel("Amplituda")
     plt.show()
+
 
 if __name__ == "__main__":
     my_record()
