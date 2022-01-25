@@ -1,8 +1,5 @@
-from math import log, sqrt, e, inf, ceil
-import random
-from statistics import mode
+from math import ceil
 from computerLogic import *
-import time
 
 
 class Node:
@@ -10,6 +7,7 @@ class Node:
         self.state = board
         self.children = []
         self.parent = None
+
 
 class Algorithm2:
     def __init__(self) -> None:
@@ -45,7 +43,7 @@ class Algorithm2:
         not_expanded_nodes = list(set(curr_node.children) - set(expanded_nodes))
 
         nodes_to_be_passed = []
-        for i in range (0, 5):
+        for i in range(0, 5):
             sel_child = Algorithm2.get_best_move_according_to_nn(not_expanded_nodes, model, color_str)
             nodes_to_be_passed.append(sel_child.state)
             expanded_nodes.append(sel_child)
@@ -73,8 +71,9 @@ class Algorithm2:
         counter = 0
         for board in choosen_boards:
             all_moves_on_depth_2[str(counter)] = board.get_possible_moves(color_str)
-            all_moves_on_depth_2[str(counter)] = Heuristic.get_best_moves_according_to_heuristic(all_moves_on_depth_2[str(counter)],
-                                                                                          False, ceil(len(all_moves_on_depth_2[str(counter)]) / 2))
+            all_moves_on_depth_2[str(counter)] = Heuristic.get_best_moves_according_to_heuristic(
+                all_moves_on_depth_2[str(counter)],
+                False, ceil(len(all_moves_on_depth_2[str(counter)]) / 2))
             map_of_boards[str(counter)] = board
             all += all_moves_on_depth_2[str(counter)]
             counter += 1
@@ -126,7 +125,6 @@ class Algorithm2:
         for child in possible_moves:
             results[child] = model.predict(
                 convert_matrix_to_array(child.state.fields, WHITE_COLOR == color_str).reshape((1, 768)))
-                #convert_matrix_to_array(child.state.fields, child.state.computer_color == color_str).reshape((1, 768)))#True
 
         flag = 0
 
@@ -138,7 +136,7 @@ class Algorithm2:
                 flag = 2
                 best_results = list(results.keys())
 
-        if (flag == 0):
+        if flag == 0:
             max_percentage = -inf
             selected_el = None
             for el in best_results:
@@ -146,7 +144,7 @@ class Algorithm2:
                 if value > max_percentage:
                     max_percentage = value
                     selected_el = el
-        elif (flag == 1):
+        elif flag == 1:
             max_percentage = -inf
             selected_el = None
             for el in best_results:
@@ -165,16 +163,13 @@ class Algorithm2:
 
         return selected_el
 
-
     @staticmethod
     def get_additional_move_according_to_nn(possible_moves, model, color_str):
-
         results = {}
 
         for child in possible_moves:
             results[child] = model.predict(
                 convert_matrix_to_array(child.state.fields, WHITE_COLOR == color_str).reshape((1, 768)))
-                #convert_matrix_to_array(child.state.fields, child.state.computer_color == color_str).reshape((1, 768)))
 
         flag = 0
 
@@ -186,7 +181,7 @@ class Algorithm2:
                 flag = 2
                 best_results = list(results.keys())
 
-        if (flag == 0):
+        if flag == 0:
             max_percentage = -inf
             selected_el = None
             for el in best_results:
@@ -194,7 +189,7 @@ class Algorithm2:
                 if value > max_percentage:
                     max_percentage = value
                     selected_el = el
-        elif (flag == 1):
+        elif flag == 1:
             max_percentage = -inf
             selected_el = None
             for el in best_results:

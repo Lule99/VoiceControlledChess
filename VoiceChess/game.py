@@ -1,14 +1,13 @@
-import time
-
+import sys
 from PySide2 import QtGui, QtCore
-from PySide2.QtWidgets import QMainWindow, QHBoxLayout, QPushButton, QVBoxLayout, QWidget
+from PySide2.QtWidgets import QMainWindow, QHBoxLayout, QMessageBox
 from keras.models import load_model
 
 from algorithm2 import *
 from board_view import BoardView
 from my_threads import Worker
-from recording import VoiceRecorder
 from soundControll.recorder import *
+from sound import Sound
 
 
 class Game(QMainWindow):
@@ -16,7 +15,7 @@ class Game(QMainWindow):
         QMainWindow.__init__(self)
         self.settings = settings
         self.board = BoardView(settings)
-        self.voice_recorder = VoiceRecorder()
+        self.try_again = Sound("./try_again.wav")
 
         self._init_ui()
 
@@ -27,21 +26,8 @@ class Game(QMainWindow):
         layout = QHBoxLayout()
         layout.addWidget(self.board)
 
-        record_btn = QPushButton("Snimanje")
-        record_btn.clicked.connect(self.recording)
-
-        main_widget = QWidget()
-        main_widget.setLayout(layout)
-        layout.addWidget(self.board)
-
-        right_part = QWidget()
-        v_layout = QVBoxLayout()
-        v_layout.addWidget(record_btn)
-        right_part.setLayout(v_layout)
-        layout.addWidget(right_part)
-
-        self.setCentralWidget(main_widget)
-        self.setFixedSize(970, 865)
+        self.setCentralWidget(self.board)
+        self.setFixedSize(850, 865)
         self.icon = QtGui.QIcon("./Slicice/icon.png")
         self.setWindowIcon(self.icon)
         self.setWindowTitle("Voice chess")
@@ -140,12 +126,12 @@ class Game(QMainWindow):
                             idle_moves_counter += 1
 
                 except Exception as e:
+                    self.try_again.play()
                     print(e)
                     continue
 
             counter = 0
 
-        
         while (True):
             if(self.settings[2] == 0):
                 pieces_remaining = count_pieces(board)
@@ -164,20 +150,31 @@ class Game(QMainWindow):
                         Node(board), model, WHITE_COLOR)
 
             if (Heuristic.check_if_it_is_tie()):
-                print("Game ended tie because of third repeat of some situation..")
+                poruka = QMessageBox
+                odg = poruka.question(self, "", "Igra zavrsena, nereseno je!", poruka.Ok)
+                if odg == poruka.Ok:
+                    sys.exit()
                 break
             if (board == -100000):
-                print("Checkmate! Congratulations, you won!")
+                poruka = QMessageBox
+                odg = poruka.question(self, "", "Sah-mat, pobedili ste!", poruka.Ok)
+                if odg == poruka.Ok:
+                    sys.exit()
                 break
             elif (board == 0):
-                print("Stalemate! Tie game..")
+                poruka = QMessageBox
+                odg = poruka.question(self, "", "Igra zavrsena, nereseno je!", poruka.Ok)
+                if odg == poruka.Ok:
+                    sys.exit()
                 break
             else:
                 if (pieces_remaining == count_pieces(board)):
                     idle_moves_counter += 1
                     if (idle_moves_counter == 50):
-                        print(
-                            "Game ended tie because 50 moves are made without capturing any pieces..")
+                        poruka = QMessageBox
+                        odg = poruka.question(self, "", "Igra zavrsena, nereseno je!", poruka.Ok)
+                        if odg == poruka.Ok:
+                            sys.exit()
                         break
                 else:
                     idle_moves_counter = 0
@@ -187,14 +184,21 @@ class Game(QMainWindow):
             possible_moves = board.get_possible_moves(choosed_color)
             if (len(possible_moves) == 0):
                 if (board.check_if_it_is_check(choosed_color)):
-                    print("Checkmate! You lost..")
+                    poruka = QMessageBox
+                    odg = poruka.question(self, "", "Igra zavrsena, izgubili ste!", poruka.Ok)
+                    if odg == poruka.Ok:
+                        sys.exit()
                     break
                 else:
-                    print("Stalemate! Tie game..")
+                    poruka = QMessageBox
+                    odg = poruka.question(self, "", "Igra zavrsena, nereseno je!", poruka.Ok)
+                    if odg == poruka.Ok:
+                        sys.exit()
                     break
             else:
                 if (board.check_if_it_is_check(choosed_color)):
-                    print("Check!\n")
+                    poruka = QMessageBox
+                    poruka.question(self, "", "Sah!", poruka.Ok)
                 pieces_remaining = count_pieces(board)
                 
                 while (counter < 2):
@@ -268,8 +272,10 @@ class Game(QMainWindow):
                 if (pieces_remaining == count_pieces(board)):
                     idle_moves_counter += 1
                     if (idle_moves_counter == 50):
-                        print(
-                            "Game ended tie because 50 moves are made without capturing any pieces..")
+                        poruka = QMessageBox
+                        odg = poruka.question(self, "", "Igra zavrsena, nereseno je!", poruka.Ok)
+                        if odg == poruka.Ok:
+                            sys.exit()
                         break
                 else:
                     idle_moves_counter = 0
@@ -278,12 +284,12 @@ class Game(QMainWindow):
                 progress_callback.emit(board)
 
                 if (Heuristic.check_if_it_is_tie()):
-                    print("Game ended tie because of third repeat of some situation..")
+                    poruka = QMessageBox
+                    odg = poruka.question(self, "", "Igra zavrsena zbog ponavljanja, nereseno je!", poruka.Ok)
+                    if odg == poruka.Ok:
+                        sys.exit()
                     break
 
     def move(self, board):
         self.board.move(board.fields)
 
-    def recording(self):
-        voice_record = self.voice_recorder.recording()
-        self.voice_recorder.save(voice_record)

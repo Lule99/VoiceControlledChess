@@ -9,7 +9,7 @@ class BoardView(QTableWidget):
         QTableWidget.__init__(self)
         self.setColumnCount(8)
         self.setRowCount(8)
-        self.sound = Sound()
+        self.sound = Sound("./move.wav")
         self.settings = settings
 
         self.board = []
@@ -28,8 +28,6 @@ class BoardView(QTableWidget):
             ]
             self.horizontal_labels = ["A", "B", "C", "D", "E", "F", "G", "H"]
             self.vertical_labels = ["8", "7", "6", "5", "4", "3", "2", "1"]
-            # self.horizontal_labels = ["H", "G", "F", "E", "D", "C", "B", "A"]
-            # self.vertical_labels = ["1", "2", "3", "4", "5", "6", "7", "8"]
         else:
             self.board = [
                 ["r", "n", "b", "q", "k", "b", "n", "r"],
@@ -81,4 +79,3 @@ class BoardView(QTableWidget):
     def move(self, board):
         self.draw(board)
         self.sound.play()
-

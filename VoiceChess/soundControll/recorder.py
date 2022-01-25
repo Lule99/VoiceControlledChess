@@ -11,9 +11,9 @@ import speech_recognition
 from matplotlib import pyplot as plt
 from pydub import AudioSegment, silence
 from scipy.io.wavfile import write
-from VoiceChess.soundControll.Utilities import img_size, dump_to_mel
-from VoiceChess.soundControll.augmentations import pojacaj
-from VoiceChess.soundControll.predict import predict_letter, predict_number
+from soundControll.Utilities import img_size, dump_to_mel
+from soundControll.augmentations import pojacaj
+from soundControll.predict import predict_letter, predict_number
 
 
 class VoiceRecorder:
