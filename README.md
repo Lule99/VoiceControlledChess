@@ -10,6 +10,9 @@ Takođe, za algoritam šaha se koristi mreža koja procenjuje da li je potez pob
 Da bi se pokrenuo projekat potrebno se prvo pozicionirati na root folder projekta i instalirati sve neophodne zavisnosti iz fajla requirements.txt komandom ``` pip install -r requirements.py```
 Nakon toga, potrebno je pokrenuti komandu ```python main.py```i odabrati level i algoritam. Na kraju, nakon sto se na konzoli prikaže znak za govor treba jasno reći polje koje selektujemo (E2) sa malom pauzom između glasova. Zatim nakon što mreža prepozna selekciju potrebno je uneti na isti način odredište.
 
+## Dokumentacija
+Prateća prezentacija kao i demo rada aplikacije se nalazi u folderu "Dokumentacija".
+
 ## Clanovi tima
 
 - Đorđe Njegić sw-12-2018
