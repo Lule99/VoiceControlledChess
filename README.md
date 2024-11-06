@@ -1,21 +1,25 @@
 # VoiceControlledChess
-Predmetni projekat za predmet Soft Computing.
+Project implementation for Soft Computing course.
 ## Opis problema
-Rešava se problem igranja šaha gde će komande biti dobijane govorom na srpskom jeziku. Za detekciju govora se koriste dve neuronske mreže, jedna za slova a druga za cifre.
-## Podaci
-Podaci za neuronsku mrežu koja prepoznaje govor su pravljenji specijalno za ovaj projekat. Sam dataset se može podeliti na dva dela. Dataset gde su podaci brojevi sa klasama 1-8 i drugi-slova sa klasama A-H. Prvi dataset broji 105 originalna audio zapisa po klasi gde je odnos ženskih i muških glasova oko 40:60. Dataset za slova sadrži nešto više snimaka po klasi, odnosno 151 snimak sa sličnim odnosom muških i ženskih glasnova. Oba dataseta su strogo balansirana i svaka klasa sadrži jednak broj elemenata. Proširenje inicijalnog dataseta obezbeđeno je raznim postupcima augmentacije, detaljno opisanim u augmentations.py, a koji su se prevashodno svodili na dodavanje različitog nivoa pozadinskog šuma, promena visine tonova, ubrzavanjem, usporenjem i pojačavanjem po potrebi (određene grupe snimaka bile su veoma slabog intenziteta te je izvršeno pojačavanje za 30db). Nakon postupka augmentacije, klase dva dataseta brojala su 1155 i 1661 element respektivno, odnosno inicijalni dataset uvećan je 11 puta. Nad ovako dobijenim podacima izvršen je postupak normalizacije i skaliranja na 128x128 piksela, obzirom na hardwersko ograničenje mašine na kojoj je vršeno testiranje (4 GB memorije na grafičkoj kartici).
-## Agentski Algoritam
-Obzirom da šah predstavlja igru nulte sume, kao agentski algoritam odabran je minimaks sa alfa-beta odsecanjem. Potreba za evaluacijom velikog broja pozicija minimaks algoritma nameće se kao osnovno ograničenje u radu agenta, te je u tom smislu implementirana heuristička funkcija manje kompleksnosti koja u obzir uzima broj i vrstu figura na tabli, kao i njihovu poziciju na osnovu tipa figura.
-##Modul Za Rad Sa Zvukom
-Modul za rad sa zvukom obuhvata funkcionalnosti potrebne za prepoznavanje odnosno klasifikaciju izgovorenih polja (što predstavlja ulazne podatke), kao i funkcionalnosti za snimanje, dalju obradu, manipulaciju, augmentaciju i obuku modela za klasifikaciju.
+This project tackles the problem of playing chess where the plazer commands are given verbally in the Serbian language. Two neural networks are used for speech recognition, one for letters and the other for digits.
+## Dataset
+The data for the speech-recognizing neural networks were manuallz gathered and created specifically for this project. The dataset itself can be divided into two parts. Dataset where the data are numbers with classes 1-8 and another - letters with classes A-H. The first dataset counts 105 original audio records per class where the ratio of female and male voices is about 40:60. The dataset for letters contains slightly more recordings per class, i.e. 151 recordings with a similar ratio of male and female samples. Both datasets are strictly balanced and each class contains an equal number of elements. The expansion of the initial dataset was introduced by various augmentation procedures, described in detail in augmentations.py, which primarily consisted of adding different levels of background noise, changing pitch, speeding up, slowing down and boosting as needed (certain groups of recordings were of very low intensity and was amplified by 30db). After the augmentation procedure, the classes of the two datasets counted 1155 and 1661 elements, respectively, that is, the initial dataset was enlarged 11 times. The data obtained in this way was normalized and scaled to 128x128 pixels, considering the hardware limitation of the machine on which the test was performed (4 GB of memory on the graphics card).
+## Agent Algorithm
+Given that chess represents a zero-sum game, chosen agent algorithm was minimax with alpha-beta pruning. The need of evaluating a large number of positions for the minimax algorithm is imposed as a fundamental limitation in the agent's work, and in this sense a less complex heuristic function is implemented that takes into account the number and type of pieces on the board, as well as their position based of the type of the piece.
 
-## Pokretanje
+## Sound Modul
+The module for working with sound includes the functionalities required for the recognition and classification of spoken chess fields (representing the input data), as well as functionalities for recording, further processing, manipulation, augmentation and model training.
+
+## Setup and Start
 Da bi se pokrenuo projekat potrebno se prvo pozicionirati na root folder projekta i instalirati sve neophodne zavisnosti iz fajla requirements.txt komandom ``` pip install -r requirements.py```
 Nakon toga, potrebno je pokrenuti komandu ```python main.py```i odabrati level i algoritam. Na kraju, nakon sto se na konzoli prikaže znak za govor treba jasno reći polje koje selektujemo (E2) sa malom pauzom između glasova. Zatim nakon što mreža prepozna selekciju potrebno je uneti na isti način odredište.
 
-## Dokumentacija
-Prateća prezentacija kao i demo rada aplikacije se nalazi u folderu "Dokumentacija".
+In order to start the game, it is needed to install all the necessary dependencies from the requirements.txt file with the command ```pip install -r requirements.py```
+After that, run ``python main.py`` command and select the level and algorithm. Finally, after the speech sign is displayed on the console, you should clearly say the field you are selecting (e.g. E2) with a small pause between voices. Then, after the network recognizes the selection, it is necessary to enter the destination in the same way.
 
-## Dizajn Sistema
+## Documentation
+The accompanying presentation as well as a demo of the application can be found in the "dokumentacija" folder.
+
+## System Design
 
 ![Untitled](https://github.com/user-attachments/assets/8d78d3eb-dbab-4f83-be84-b96cc33207da)
