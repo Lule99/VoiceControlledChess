@@ -11,9 +11,6 @@ Given that chess represents a zero-sum game, chosen agent algorithm was minimax 
 The module for working with sound includes the functionalities required for the recognition and classification of spoken chess fields (representing the input data), as well as functionalities for recording, further processing, manipulation, augmentation and model training.
 
 ## Setup and Start
-Da bi se pokrenuo projekat potrebno se prvo pozicionirati na root folder projekta i instalirati sve neophodne zavisnosti iz fajla requirements.txt komandom ``` pip install -r requirements.py```
-Nakon toga, potrebno je pokrenuti komandu ```python main.py```i odabrati level i algoritam. Na kraju, nakon sto se na konzoli prikaže znak za govor treba jasno reći polje koje selektujemo (E2) sa malom pauzom između glasova. Zatim nakon što mreža prepozna selekciju potrebno je uneti na isti način odredište.
-
 In order to start the game, it is needed to install all the necessary dependencies from the requirements.txt file with the command ```pip install -r requirements.py```
 After that, run ``python main.py`` command and select the level and algorithm. Finally, after the speech sign is displayed on the console, you should clearly say the field you are selecting (e.g. E2) with a small pause between voices. Then, after the network recognizes the selection, it is necessary to enter the destination in the same way.
 
