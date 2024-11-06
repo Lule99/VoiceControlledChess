@@ -15,3 +15,7 @@ Nakon toga, potrebno je pokrenuti komandu ```python main.py```i odabrati level i
 
 ## Dokumentacija
 Prateća prezentacija kao i demo rada aplikacije se nalazi u folderu "Dokumentacija".
+
+## Dizajn Sistema
+
+![Untitled](https://github.com/user-attachments/assets/8d78d3eb-dbab-4f83-be84-b96cc33207da)
